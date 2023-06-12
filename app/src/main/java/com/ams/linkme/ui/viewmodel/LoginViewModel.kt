@@ -1,3 +1,5 @@
+package com.ams.linkme.ui.viewmodel
+
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth

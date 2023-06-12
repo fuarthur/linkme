@@ -1,6 +1,6 @@
 package com.ams.linkme.ui.activity
 
-import LoginViewModel
+import com.ams.linkme.ui.viewmodel.LoginViewModel
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -42,7 +42,7 @@ class LoginActivity : AppCompatActivity() {
                 }
 
                 else -> {
-                    // 处理未覆盖到的情况
+                    Toast.makeText(this, "未知错误", Toast.LENGTH_SHORT).show()
                 }
             }
         }
