@@ -6,4 +6,7 @@
     <string name="register_hint">Don\'t have an account? Register</string>
     <string name="register">Register</string>
     <string name="repeatPassword">Repeat Password</string>
+    <string name="link">Link</string>
+    <string name="chat">Chat</string>
+    <string name="profile">Profile</string>
 </resources>
