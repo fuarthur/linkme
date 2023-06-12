@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "784885008783",
+    "firebase_url": "https://linkme-e0b8d-default-rtdb.firebaseio.com",
+    "project_id": "linkme-e0b8d",
+    "storage_bucket": "linkme-e0b8d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:784885008783:android:2d1aa5c4b101395066e3fa",
+        "android_client_info": {
+          "package_name": "com.ams.linkme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "784885008783-ngt14gs3fr7ffmvu3biviuu8ps3mc2r3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCzrCCaI-hWKSX0dVn-vkuwp7KpehOKAtk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "784885008783-ngt14gs3fr7ffmvu3biviuu8ps3mc2r3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

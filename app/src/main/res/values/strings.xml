@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name" translatable="false">Link Me</string>
+    <string name="username">username</string>
+    <string name="password">password</string>
+    <string name="login">Login</string>
+    <string name="register_hint">Don\'t have an account? Register</string>
+</resources>
