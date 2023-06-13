@@ -3,7 +3,7 @@
     <string name="username">email</string>
     <string name="password">password</string>
     <string name="login">Login</string>
-    <string name="register_hint">Don\'t have an account? Register</string>
+    <string name="register_hint">Register</string>
     <string name="register">Register</string>
     <string name="repeatPassword">Repeat Password</string>
     <string name="link">Link</string>
