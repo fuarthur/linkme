@@ -45,18 +45,26 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/login"
-            android:padding="12dp"
+            android:padding="16sp"
+            android:textSize="16sp"
             android:layout_marginBottom="16dp"
             android:background="@color/colorPrimary"/>
 
-    <Button
-            android:id="@+id/text_view_register"
+    <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/register_hint"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:gravity="center"
-            android:background="@color/colorPrimary"/>
+            android:orientation="horizontal"
+            android:gravity="end">
+        <Button
+                android:id="@+id/text_view_register"
+                android:layout_width="139dp"
+                android:layout_height="wrap_content"
+                android:text="@string/register_hint"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:background="@color/colorPrimary"
+        />
 
+    </LinearLayout>
 </LinearLayout>

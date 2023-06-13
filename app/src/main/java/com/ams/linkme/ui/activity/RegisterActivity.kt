@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.ams.linkme.R
 import com.ams.linkme.ui.viewmodel.RegisterViewModel
 
+
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var usernameEditText: EditText
@@ -37,8 +38,8 @@ class RegisterActivity : AppCompatActivity() {
         registerViewModel.registerResultLiveData.observe(this) { result ->
             when (result) {
                 is RegisterViewModel.RegisterResult.Success -> {
-                    Toast.makeText(this, "注册成功", Toast.LENGTH_SHORT).show()
-                    navigateToMainActivity()
+                    Toast.makeText(this, "注册成功，请登录", Toast.LENGTH_SHORT).show()
+                    navigateToLoginActivity()
                 }
 
                 is RegisterViewModel.RegisterResult.Error -> {
@@ -63,13 +64,6 @@ class RegisterActivity : AppCompatActivity() {
         backButton.setOnClickListener {
             navigateToLoginActivity()
         }
-    }
-
-    private fun navigateToMainActivity() {
-        // 导航到主界面
-        val intent = Intent(this@RegisterActivity, MainActivity::class.java)
-        startActivity(intent)
-        finish()
     }
 
     private fun navigateToLoginActivity() {
