@@ -16,6 +16,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var passwordEditText: EditText
     private lateinit var repeatPasswordEditText: EditText
     private lateinit var registerButton: Button
+    private lateinit var backButton: Button
     private lateinit var registerViewModel: RegisterViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,6 +28,7 @@ class RegisterActivity : AppCompatActivity() {
         passwordEditText = findViewById(R.id.edit_text_password)
         repeatPasswordEditText = findViewById(R.id.repeat_text_password)
         registerButton = findViewById(R.id.button_register)
+        backButton = findViewById(R.id.button_back)
 
         // 初始化 ViewModel
         registerViewModel = ViewModelProvider(this)[RegisterViewModel::class.java]
@@ -57,11 +59,21 @@ class RegisterActivity : AppCompatActivity() {
 
             registerViewModel.register(username, password, repeatPassword)
         }
+
+        backButton.setOnClickListener {
+            navigateToLoginActivity()
+        }
     }
 
     private fun navigateToMainActivity() {
         // 导航到主界面
         val intent = Intent(this@RegisterActivity, MainActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun navigateToLoginActivity() {
+        val intent = Intent(this@RegisterActivity, LoginActivity::class.java)
         startActivity(intent)
         finish()
     }
