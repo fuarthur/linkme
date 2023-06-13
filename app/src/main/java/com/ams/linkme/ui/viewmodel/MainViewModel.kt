@@ -1,4 +1,6 @@
 package com.ams.linkme.ui.viewmodel
 
-class MainViewModel {
+import androidx.lifecycle.ViewModel
+
+class MainViewModel: ViewModel() {
 }
