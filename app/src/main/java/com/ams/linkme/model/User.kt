@@ -1,4 +1,6 @@
 package com.ams.linkme.model
 
-class User {
-}
+data class User (
+    val username: String? = null,
+    val email: String? = null
+)

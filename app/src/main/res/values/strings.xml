@@ -26,4 +26,6 @@
     <string name="name">Name</string>
     <string name="other">Other</string>
     <string name="e_mail">E-mail</string>
+    <string name="message_hint">Enter your message</string>
+    <string name="send">Send</string>
 </resources>

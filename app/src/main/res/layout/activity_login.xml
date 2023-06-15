@@ -22,41 +22,45 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/username"
-            android:textColorHint="@color/black"
             android:inputType="text"
             android:padding="8dp"
-            android:layout_marginBottom="16dp" android:minHeight="48dp" android:autofillHints=""
-            android:background="@color/white"/>
+            android:layout_marginBottom="16dp" android:minHeight="48dp" android:autofillHints=""/>
 
     <EditText
             android:id="@+id/edit_text_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/password"
-            android:textColorHint="@color/black"
             android:inputType="textPassword"
             android:padding="8dp"
-            android:layout_marginBottom="16dp" android:minHeight="48dp" android:autofillHints=""
-            android:background="@color/white"
-    />
+            android:layout_marginBottom="16dp" android:minHeight="48dp" android:autofillHints=""/>
 
     <Button
             android:id="@+id/button_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/login"
-            android:padding="12dp"
+            android:textColor="@color/white"
+            android:padding="16sp"
+            android:textSize="16sp"
             android:layout_marginBottom="16dp"
             android:background="@color/colorPrimary"/>
 
-    <Button
-            android:id="@+id/text_view_register"
+    <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/register_hint"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:gravity="center"
-            android:background="@color/colorPrimary"/>
+            android:orientation="horizontal"
+            android:gravity="end">
+        <Button
+                android:id="@+id/text_view_register"
+                android:layout_width="139dp"
+                android:layout_height="wrap_content"
+                android:text="@string/register_hint"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:background="@color/colorPrimary"
+        />
 
+    </LinearLayout>
 </LinearLayout>
