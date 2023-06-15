@@ -22,29 +22,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/username"
-            android:textColorHint="@color/black"
             android:inputType="text"
             android:padding="8dp"
-            android:layout_marginBottom="16dp" android:minHeight="48dp" android:autofillHints=""
-            android:background="@color/white"/>
+            android:layout_marginBottom="16dp" android:minHeight="48dp" android:autofillHints=""/>
 
     <EditText
             android:id="@+id/edit_text_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/password"
-            android:textColorHint="@color/black"
             android:inputType="textPassword"
             android:padding="8dp"
-            android:layout_marginBottom="16dp" android:minHeight="48dp" android:autofillHints=""
-            android:background="@color/white"
-    />
+            android:layout_marginBottom="16dp" android:minHeight="48dp" android:autofillHints=""/>
 
     <Button
             android:id="@+id/button_login"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/login"
+            android:textColor="@color/white"
             android:padding="16sp"
             android:textSize="16sp"
             android:layout_marginBottom="16dp"

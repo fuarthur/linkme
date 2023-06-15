@@ -10,4 +10,6 @@
     <string name="chat">Chat</string>
     <string name="profile">Profile</string>
     <string name="back">&lt;</string>
+    <string name="message_hint">Enter your message</string>
+    <string name="send">Send</string>
 </resources>
