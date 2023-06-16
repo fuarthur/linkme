@@ -62,3 +62,5 @@ class RegisterViewModel : ViewModel() {
         data class Error(val errorMessage: String) : RegisterResult()
     }
 }
+
+

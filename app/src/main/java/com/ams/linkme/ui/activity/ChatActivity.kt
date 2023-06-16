@@ -47,7 +47,7 @@ class ChatActivity : AppCompatActivity() {
             if (messageText.isNotEmpty()) {
                 val currentUser = FirebaseAuth.getInstance().currentUser
                 if (currentUser != null) {
-                    chatViewModel.sendMessage(messageText)
+                    // chatViewModel.sendMessage(messageText)
                     messageEditText.setText("")
                 }
             }
