@@ -1,5 +1,6 @@
 package com.ams.linkme.ui.activity
 
+import MainActivity
 import com.ams.linkme.ui.viewmodel.LoginViewModel
 import android.content.Intent
 import android.os.Bundle
