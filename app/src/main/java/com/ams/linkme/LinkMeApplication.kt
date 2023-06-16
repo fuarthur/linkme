@@ -10,12 +10,6 @@ class LinkMeApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        // 初始化 Firebase
-//        try {
-//            FirebaseApp.initializeApp(this)
-//        } finally {
-//            print(1)
-//        }
         FirebaseApp.initializeApp(this)
 
         // 初始化其他配置或依赖项

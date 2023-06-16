@@ -1,6 +1,77 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                   android:layout_width="match_parent"
-                                                   android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:orientation="vertical">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <ImageView
+            android:id="@+id/title_logo"
+            android:layout_width="100px"
+            android:layout_height="100px"
+            android:src="@drawable/logolink"
+            android:layout_marginLeft="500px"
+            android:layout_marginTop="50px"
+    />
+
+
+    <!-- Add your content here -->
+    <TextView
+            android:id="@+id/text_view_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LINK"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:padding="16dp"
+            android:background="@color/colorPrimary"
+            android:textColor="@android:color/white"/>
+    <Button
+            android:id="@+id/linkbutton"
+            android:layout_width="match_parent"
+            android:layout_height="150px"
+            android:text="LINK ME!"
+            android:layout_marginTop="1500px"
+            android:background="@android:drawable/btn_default"/>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+            android:layout_width="match_parent"
+            android:layout_height="180px"
+            app:menu="@menu/bottom_navigation_menu"
+            android:layout_marginTop="1760px"
+            android:background="@color/colorPrimary"/>
+
+    <TextView
+            android:id="@+id/textViewTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="User Information"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:padding="16dp"
+            android:layout_marginTop="350px"/>
+    <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="550px"/>
+
+
+
+    <ImageView
+            android:layout_width="300px"
+            android:layout_height="300px"
+            android:layout_marginTop="1120px"
+            android:layout_marginLeft="398px"
+            android:src="@drawable/abc"/>
+
+    <EditText
+            android:id="@+id/searchEditText"
+            android:layout_width="800px"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="150px"
+            android:layout_marginTop="200px"
+            android:hint="Enter the hobby you want to link to"
+            android:inputType="text"
+            android:maxLines="1" />
+
+
+</RelativeLayout>
