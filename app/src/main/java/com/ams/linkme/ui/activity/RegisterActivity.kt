@@ -58,7 +58,7 @@ class RegisterActivity : AppCompatActivity() {
             val password = passwordEditText.text.toString().trim()
             val username = usernameEditText.text.toString().trim()
 
-            registerViewModel.register(email, password, username)
+            registerViewModel.register(username, email, password)
         }
 
         backButton.setOnClickListener {
