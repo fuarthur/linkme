@@ -28,4 +28,7 @@
     <string name="e_mail">E-mail</string>
     <string name="message_hint">Enter your message</string>
     <string name="send">Send</string>
+    <string name="link_button">LINK ME!</string>
+    <string name="user_information">User Information</string>
+    <string name="link_hint">Enter the hobby you want to link to</string>
 </resources>
