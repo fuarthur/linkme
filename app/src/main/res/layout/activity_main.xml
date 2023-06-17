@@ -18,16 +18,16 @@
     <Button
             android:id="@+id/linkbutton"
             android:layout_width="match_parent"
-            android:layout_height="150px"
+            android:layout_height="60dp"
             android:text="@string/link_button"
-            android:layout_marginTop="1500px"
+            android:layout_marginTop="550dp"
             android:background="@android:drawable/btn_default"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
             android:layout_width="match_parent"
-            android:layout_height="180px"
+            android:layout_height="70dp"
             app:menu="@menu/bottom_navigation_menu"
-            android:layout_marginTop="1760px"
+            android:layout_marginTop="660dp"
             android:background="@color/colorPrimary"/>
 
 
@@ -40,25 +40,26 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:padding="16dp"
-            android:layout_marginTop="350px"/>
+            android:layout_marginTop="140dp"/>
 
 
 
 
     <EditText
             android:id="@+id/searchEditText"
-            android:layout_width="800px"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="150px"
-            android:layout_marginTop="200px"
+            android:layout_marginLeft="60dp"
+            android:layout_marginTop="80dp"
             android:hint="@string/link_hint"
             android:inputType="text"
             android:maxLines="1" android:minHeight="48dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/userRecyclerView"
+            android:layout_marginTop="200dp"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="180dp"
     />
 
 
