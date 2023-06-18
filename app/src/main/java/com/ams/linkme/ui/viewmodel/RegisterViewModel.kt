@@ -42,12 +42,13 @@ class RegisterViewModel : ViewModel() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val user: FirebaseUser? = firebaseAuth.currentUser
+                    val uid = user!!.uid
                     _registerResultLiveData.value = RegisterResult.Success(user)
                     val postMap = hashMapOf<String, Any>()
                     postMap["username"] = username
                     postMap["email"] = email
 
-                    firestore.collection("Users").add(postMap).addOnSuccessListener {
+                    firestore.collection("Users").document(uid).set(postMap).addOnSuccessListener {
                         RegisterResult.Success(user)
                     }
                 } else {
@@ -62,5 +63,9 @@ class RegisterViewModel : ViewModel() {
         data class Error(val errorMessage: String) : RegisterResult()
     }
 }
+
+
+
+
 
 
