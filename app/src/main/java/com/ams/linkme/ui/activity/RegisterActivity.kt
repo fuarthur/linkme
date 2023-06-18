@@ -14,7 +14,6 @@ import com.ams.linkme.ui.viewmodel.RegisterViewModel
 
 class RegisterActivity : AppCompatActivity() {
 
-    private lateinit var usernameEditText: EditText
     private lateinit var passwordEditText: EditText
     private lateinit var emailEditText: EditText
     private lateinit var registerButton: Button
@@ -27,9 +26,8 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(R.layout.activity_register)
 
         // 初始化视图
-        usernameEditText = findViewById(R.id.edit_text_username)
-        passwordEditText = findViewById(R.id.edit_text_password)
         emailEditText = findViewById(R.id.edit_text_email)
+        passwordEditText = findViewById(R.id.edit_text_password)
         registerButton = findViewById(R.id.button_register)
         backButton = findViewById(R.id.button_back)
 
@@ -60,9 +58,8 @@ class RegisterActivity : AppCompatActivity() {
         registerButton.setOnClickListener {
             val email = emailEditText.text.toString().trim()
             val password = passwordEditText.text.toString().trim()
-            val username = usernameEditText.text.toString().trim()
 
-            registerViewModel.register(username, email, password)
+            registerViewModel.register(email, password)
         }
 
         backButton.setOnClickListener {

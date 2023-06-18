@@ -17,10 +17,10 @@ class RegisterViewModel : ViewModel() {
     private lateinit var firestore: FirebaseFirestore
 
 
-    fun register(username: String, email: String, password: String) {
+    fun register(email: String, password: String) {
         firestore = Firebase.firestore
         // 验证用户名和密码
-        if (username.isEmpty() || password.isEmpty() || email.isEmpty()) {
+        if (email.isEmpty() || password.isEmpty()) {
             _registerResultLiveData.value = RegisterResult.Error("请填写所有字段")
             return
         }
@@ -45,7 +45,6 @@ class RegisterViewModel : ViewModel() {
                     val uid = user!!.uid
                     _registerResultLiveData.value = RegisterResult.Success(user, email, password)
                     val postMap = hashMapOf<String, Any>()
-                    postMap["username"] = username
                     postMap["email"] = email
 
                     firestore.collection("Users").document(uid).set(postMap).addOnSuccessListener {
@@ -59,7 +58,7 @@ class RegisterViewModel : ViewModel() {
     }
 
     sealed class RegisterResult {
-        data class Success(val user: FirebaseUser?, val email: String, val password: String) : RegisterResult() {}
+        data class Success(val user: FirebaseUser?, val email: String, val password: String) : RegisterResult()
         data class Error(val errorMessage: String) : RegisterResult()
     }
 }
