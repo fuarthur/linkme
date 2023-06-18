@@ -16,6 +16,7 @@ import com.ams.linkme.R
 import com.ams.linkme.adapter.UserAdapter
 import com.ams.linkme.model.User
 import com.ams.linkme.ui.viewmodel.MainViewModel
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var linkButton: Button
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity() {
             userList = mainViewModel.link(interestText.text.toString().trim())
             Log.d("UserList", userList.toString())
             // handleUserList(userList)
+            bottomNavigate()
         }
     }
 
@@ -71,6 +73,28 @@ class MainActivity : AppCompatActivity() {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this)
     }
+    fun bottomNavigate() {
+        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
+        bottomNavigationView.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.menu_link -> {
+                    Toast.makeText(this, "你已经在这一页了", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                R.id.menu_chat -> {
+                    navigateToChatActivity()
+                    true
+                }
+                R.id.menu_profile -> {
+                    navigateToProfileActivity()
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+
+
 
     private fun navigateToChatActivity() {
         val intent = Intent(this@MainActivity, ChatActivity::class.java)
