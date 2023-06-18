@@ -86,6 +86,7 @@ class ProfileActivity : AppCompatActivity() {
             val user = auth.currentUser
             val uid = user!!.uid // The user's ID, unique to the Firebase project.
             profileViewModel.submit(uid, gender, phone, interests)
+            Toast.makeText(this,"提交成功",Toast.LENGTH_SHORT).show()
         }
     }
 }
