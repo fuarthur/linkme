@@ -29,7 +29,7 @@
             app:layout_marginStart="225dp"
             app:layout_marginTop="243dp"
             android:layout_marginTop="225dp"
-            android:layout_marginStart="243dp"/>
+            android:layout_marginStart="243dp" android:minHeight="48dp"/>
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -51,7 +51,7 @@
             app:layout_marginStart="225dp"
             app:layout_marginTop="323dp"
             android:layout_marginTop="225dp"
-            android:layout_marginStart="323dp"/>
+            android:layout_marginStart="323dp" android:minHeight="48dp"/>
 
     <RadioGroup
             android:id="@+id/radio_group_gender"
@@ -82,7 +82,7 @@
             app:layout_marginStart="105dp"
             app:layout_marginTop="6dp"
             android:layout_marginTop="44dp"
-            android:layout_marginStart="16dp"/>
+            android:layout_marginStart="16dp" android:minHeight="48dp"/>
     <Button
             android:text="@string/submit"
             android:layout_width="403dp"
@@ -104,7 +104,7 @@
             app:layout_marginStart="246dp"
             app:layout_marginTop="22dp"
             android:layout_marginTop="246dp"
-            android:layout_marginStart="22dp"/>
+            android:layout_marginStart="22dp" android:minHeight="48dp"/>
     <CheckBox
             android:text="@string/food"
             android:layout_width="100dp"
@@ -115,7 +115,7 @@
             app:layout_marginStart="291dp"
             app:layout_marginTop="22dp"
             android:layout_marginTop="291dp"
-            android:layout_marginStart="22dp"/>
+            android:layout_marginStart="22dp" android:minHeight="48dp"/>
     <CheckBox
             android:text="@string/dating"
             android:layout_width="100dp"
@@ -126,7 +126,7 @@
             app:layout_marginStart="22dp"
             app:layout_marginTop="10dp"
             android:layout_marginTop="332dp"
-            android:layout_marginStart="22dp"/>
+            android:layout_marginStart="22dp" android:minHeight="48dp"/>
     <CheckBox
             android:text="@string/games"
             android:layout_width="100dp"
@@ -137,7 +137,7 @@
             app:layout_marginStart="378dp"
             app:layout_marginTop="22dp"
             android:layout_marginTop="378dp"
-            android:layout_marginStart="22dp"/>
+            android:layout_marginStart="22dp" android:minHeight="48dp"/>
     <CheckBox
             android:text="@string/music"
             android:layout_width="100dp"
@@ -148,7 +148,7 @@
             app:layout_marginStart="419dp"
             app:layout_marginTop="22dp"
             android:layout_marginTop="419dp"
-            android:layout_marginStart="22dp"/>
+            android:layout_marginStart="22dp" android:minHeight="48dp"/>
     <CheckBox
             android:text="@string/anime"
             android:layout_width="100dp"
@@ -159,7 +159,7 @@
             app:layout_marginStart="506dp"
             app:layout_marginTop="22dp"
             android:layout_marginTop="506dp"
-            android:layout_marginStart="22dp"/>
+            android:layout_marginStart="22dp" android:minHeight="48dp"/>
     <CheckBox
             android:text="@string/movie"
             android:layout_width="100dp"
@@ -170,7 +170,7 @@
             app:layout_marginStart="462dp"
             app:layout_marginTop="22dp"
             android:layout_marginTop="462dp"
-            android:layout_marginStart="22dp"/>
+            android:layout_marginStart="22dp" android:minHeight="48dp"/>
     <TextView
             android:text="@string/select_your_interests"
             android:layout_width="219dp"
@@ -193,7 +193,7 @@
             app:layout_marginStart="539dp"
             app:layout_marginTop="22dp"
             android:layout_marginTop="550dp"
-            android:layout_marginStart="22dp"/>
+            android:layout_marginStart="22dp" android:minHeight="48dp"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
