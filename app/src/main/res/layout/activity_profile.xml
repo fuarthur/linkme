@@ -69,19 +69,7 @@
             android:hint="@string/name"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
-    <EditText
-            android:text="@string/e_mail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="textEmailAddress"
-            android:ems="10"
-            android:id="@+id/editTextTextEmailAddress"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_marginStart="45dp"
-            app:layout_marginTop="6dp"
-            android:layout_marginTop="45dp"
-            android:layout_marginStart="6dp"/>
+
     <EditText
             android:text="@string/phone"
             android:layout_width="wrap_content"
@@ -93,8 +81,8 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_marginStart="105dp"
             app:layout_marginTop="6dp"
-            android:layout_marginTop="105dp"
-            android:layout_marginStart="6dp"/>
+            android:layout_marginTop="44dp"
+            android:layout_marginStart="16dp"/>
     <Button
             android:text="@string/submit"
             android:layout_width="403dp"
@@ -185,15 +173,15 @@
             android:layout_marginStart="22dp"/>
     <TextView
             android:text="@string/select_your_interests"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="219dp"
+            android:layout_height="95dp"
             android:id="@+id/textView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_marginStart="207dp"
             app:layout_marginTop="25dp"
-            android:layout_marginTop="200dp"
-            android:layout_marginStart="16dp"
+            android:layout_marginTop="112dp"
+            android:layout_marginStart="20dp"
             android:textSize="20sp"/>
     <CheckBox
             android:text="@string/other"
