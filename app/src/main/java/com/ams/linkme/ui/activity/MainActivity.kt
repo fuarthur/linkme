@@ -1,3 +1,5 @@
+package com.ams.linkme.ui.activity
+
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -13,8 +15,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.ams.linkme.R
 import com.ams.linkme.adapter.UserAdapter
 import com.ams.linkme.model.User
-import com.ams.linkme.ui.activity.ChatActivity
-import com.ams.linkme.ui.activity.ProfileActivity
 import com.ams.linkme.ui.viewmodel.MainViewModel
 
 class MainActivity : AppCompatActivity() {

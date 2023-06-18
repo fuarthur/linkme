@@ -1,9 +1,8 @@
 <resources>
     <string name="app_name" translatable="false">Link Me</string>
-    <string name="username">email</string>
+    <string name="username">username</string>
     <string name="password">password</string>
     <string name="login">Login</string>
-    <string name="register_hint">Don\'t have an account? Register</string>
     <string name="register">Register</string>
     <string name="repeatPassword">Repeat Password</string>
     <string name="link">Link</string>
@@ -25,7 +24,7 @@
     <string name="female">Female</string>
     <string name="name">Name</string>
     <string name="other">Other</string>
-    <string name="e_mail">E-mail</string>
+    <string name="email">email</string>
     <string name="message_hint">Enter your message</string>
     <string name="send">Send</string>
     <string name="link_button">LINK ME!</string>
