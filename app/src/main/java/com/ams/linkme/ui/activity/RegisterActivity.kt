@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.ams.linkme.R
+import com.ams.linkme.ui.viewmodel.LoginViewModel
 import com.ams.linkme.ui.viewmodel.RegisterViewModel
 
 
@@ -19,6 +20,7 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var registerButton: Button
     private lateinit var backButton: Button
     private lateinit var registerViewModel: RegisterViewModel
+    private lateinit var loginViewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,13 +35,15 @@ class RegisterActivity : AppCompatActivity() {
 
         // 初始化 ViewModel
         registerViewModel = ViewModelProvider(this)[RegisterViewModel::class.java]
+        loginViewModel = ViewModelProvider(this)[LoginViewModel::class.java]
 
         // 监听注册结果
         registerViewModel.registerResultLiveData.observe(this) { result ->
             when (result) {
                 is RegisterViewModel.RegisterResult.Success -> {
-                    Toast.makeText(this, "注册成功，请登录", Toast.LENGTH_SHORT).show()
-                    navigateToLoginActivity()
+                    Toast.makeText(this, "注册成功，请设置个人档案", Toast.LENGTH_SHORT).show()
+                    loginViewModel.login(result.email, result.password)
+                    navigateToProfileActivity()
                 }
 
                 is RegisterViewModel.RegisterResult.Error -> {
@@ -64,6 +68,12 @@ class RegisterActivity : AppCompatActivity() {
         backButton.setOnClickListener {
             navigateToLoginActivity()
         }
+    }
+
+    private fun navigateToProfileActivity() {
+        val intent = Intent(this@RegisterActivity, ProfileActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 
     private fun navigateToLoginActivity() {
