@@ -2,13 +2,13 @@ package com.ams.linkme.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var linkButton: Button
     private lateinit var interestText: EditText
     private lateinit var mainViewModel: MainViewModel
-    private lateinit var users: MutableLiveData<User>
+    private lateinit var userList: List<User>
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,9 +31,9 @@ class MainActivity : AppCompatActivity() {
         interestText = findViewById(R.id.searchEditText)
         linkButton.setOnClickListener {
             mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
-            mainViewModel.link(interestText.text.toString().trim()) { userList ->
-                handleUserList(userList)
-            }
+            userList = mainViewModel.link(interestText.text.toString().trim())
+            Log.d("UserList", userList.toString())
+            // handleUserList(userList)
         }
     }
 
