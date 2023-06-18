@@ -23,15 +23,13 @@
             android:layout_marginTop="550dp"
             android:background="@android:drawable/btn_default"/>
 
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_width="wrap_content"
+            android:layout_height="66dp"
             app:menu="@menu/bottom_navigation_menu"
-            android:layout_marginTop="660dp"
-            android:background="@color/colorPrimary"/>
-
-
-
+            android:background="@color/colorPrimary"
+            android:layout_alignParentBottom="true"/>
     <TextView
             android:id="@+id/textViewTitle"
             android:layout_width="match_parent"
@@ -53,7 +51,8 @@
             android:layout_marginTop="80dp"
             android:hint="@string/link_hint"
             android:inputType="text"
-            android:maxLines="1" android:minHeight="48dp"/>
+            android:maxLines="1"
+            android:minHeight="48dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/userRecyclerView"
