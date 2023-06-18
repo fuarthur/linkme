@@ -10,7 +10,6 @@ import com.google.firebase.auth.FirebaseAuth
 
 
 class ProfileActivity : AppCompatActivity() {
-    private lateinit var profileButton: Button
     private lateinit var radioButtonMale: RadioButton
     private lateinit var imageViewPerson: ImageView
     private lateinit var radioButtonFemale: RadioButton
@@ -31,7 +30,6 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_profile)
 
         // Initialize all views
-        profileButton = findViewById(R.id.profile_button)
         radioButtonMale = findViewById(R.id.radio_button_male)
         imageViewPerson = findViewById(R.id.imageView)
         radioButtonFemale = findViewById(R.id.radio_button_female)
