@@ -1,6 +1,9 @@
 package com.ams.linkme.ui.activity
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
@@ -10,7 +13,6 @@ import com.google.firebase.auth.FirebaseAuth
 
 
 class ProfileActivity : AppCompatActivity() {
-    private lateinit var profileButton: Button
     private lateinit var radioButtonMale: RadioButton
     private lateinit var imageViewPerson: ImageView
     private lateinit var radioButtonFemale: RadioButton
@@ -31,7 +33,6 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_profile)
 
         // Initialize all views
-        profileButton = findViewById(R.id.profile_button)
         radioButtonMale = findViewById(R.id.radio_button_male)
         imageViewPerson = findViewById(R.id.imageView)
         radioButtonFemale = findViewById(R.id.radio_button_female)
@@ -87,7 +88,46 @@ class ProfileActivity : AppCompatActivity() {
             val uid = user!!.uid // The user's ID, unique to the Firebase project.
             profileViewModel.submit(uid, gender, phone, interests)
             Toast.makeText(this,"提交成功",Toast.LENGTH_SHORT).show()
+            navigateToMainActivity()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.bottom_navigation_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_link -> {
+                navigateToMainActivity()
+                true
+            }
+
+            R.id.menu_chat -> {
+                navigateToChatActivity()
+                true
+            }
+
+            R.id.menu_profile -> {
+                Toast.makeText(this, "你已经在这一页了", Toast.LENGTH_SHORT).show()
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun navigateToMainActivity() {
+        val intent = Intent(this@ProfileActivity, MainActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+
+    private fun navigateToChatActivity() {
+        val intent = Intent(this@ProfileActivity, ChatActivity::class.java)
+        startActivity(intent)
+        finish()
     }
 }
 

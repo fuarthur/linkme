@@ -19,17 +19,6 @@
             android:background="@color/colorPrimary"
             android:textColor="@android:color/white"/>
 
-    <RadioButton
-            android:id="@+id/radio_button_male"
-            android:layout_width="80dp"
-            android:layout_height="wrap_content"
-            android:text="@string/male"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginStart="128dp"
-            android:layout_marginTop="312dp"
-            android:minHeight="48dp"/>
-
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -50,24 +39,31 @@
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginTop="664dp"/>
 
-    <RadioButton
-            android:id="@+id/radio_button_female"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/female"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginStart="208dp"
-            android:layout_marginTop="312dp"
-            android:minHeight="48dp"/>
+
     <RadioGroup
             android:id="@+id/radio_group_gender"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="312dp"
+            android:layout_marginStart="116dp">
 
+        <RadioButton
+                android:id="@+id/radio_button_male"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/male"
+                android:minHeight="48dp"/>
+
+        <RadioButton
+                android:id="@+id/radio_button_female"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/female"
+                android:minHeight="48dp"/>
+
+    </RadioGroup>
     <EditText
             android:id="@+id/edit_text_name"
             android:layout_width="234dp"
@@ -76,19 +72,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="216dp"
             android:layout_marginStart="88dp"/>
+
     <EditText
-            android:text="@string/phone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:hint="@string/phone"
+            android:layout_width="234dp"
+            android:layout_height="48dp"
             android:inputType="phone"
             android:ems="10"
             android:id="@+id/editTextPhone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginStart="100dp"
+            android:layout_marginStart="88dp"
             android:layout_marginTop="264dp"
             android:minHeight="48dp"/>
-
     <Button
             android:text="@string/submit"
             android:layout_width="209dp"
