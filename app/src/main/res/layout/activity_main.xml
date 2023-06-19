@@ -20,17 +20,36 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:text="@string/link_button"
-            android:layout_marginTop="550dp"
+            android:layout_marginTop="600dp"
             android:background="@android:drawable/btn_default"/>
 
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bottomNavigationView"
-            android:layout_width="wrap_content"
-            android:layout_height="66dp"
-            app:menu="@menu/bottom_navigation_menu"
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
             android:background="@color/colorPrimary"
             android:layout_alignParentBottom="true"/>
+
+
+    <Button
+            android:id="@+id/btnLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Link"
+            android:textColor="@color/black"
+            android:layout_marginLeft="30dp"
+            android:background="@color/colorPrimary"
+            android:layout_alignParentBottom="true"/>
+
+    <Button
+            android:id="@+id/btnProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profile"
+            android:textColor="@color/white"
+            android:layout_marginLeft="290dp"
+            android:background="@color/colorPrimary"
+            android:layout_alignParentBottom="true"/>
+
     <TextView
             android:id="@+id/textViewTitle"
             android:layout_width="match_parent"
@@ -42,24 +61,29 @@
             android:layout_marginTop="140dp"/>
 
 
-
-
-    <EditText
+    <TextView
             android:id="@+id/searchEditText"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="60dp"
-            android:layout_marginTop="80dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="95dp"
             android:hint="@string/link_hint"
+            android:textSize="18dp"
             android:inputType="text"
             android:maxLines="1"
             android:minHeight="48dp"/>
+    <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="95dp"
+            android:layout_marginLeft="320dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/userRecyclerView"
             android:layout_marginTop="200dp"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="400dp"
     />
 
 

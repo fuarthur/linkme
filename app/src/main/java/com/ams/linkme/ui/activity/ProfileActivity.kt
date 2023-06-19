@@ -28,6 +28,9 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var anime: CheckBox
     private lateinit var other: CheckBox
     private lateinit var profileViewModel: ProfileViewModel
+    private lateinit var gotolink: Button
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
@@ -47,6 +50,7 @@ class ProfileActivity : AppCompatActivity() {
         movie = findViewById(R.id.Movie)
         anime = findViewById(R.id.Anime)
         other = findViewById(R.id.Other)
+        gotolink = findViewById(R.id.btnLink)
         profileViewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
 
         submitButton.setOnClickListener {
@@ -90,7 +94,12 @@ class ProfileActivity : AppCompatActivity() {
             Toast.makeText(this,"提交成功",Toast.LENGTH_SHORT).show()
             navigateToMainActivity()
         }
+
+        gotolink.setOnClickListener{
+            navigateToMainActivity()
+        }
     }
+
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.bottom_navigation_menu, menu)

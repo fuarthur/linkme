@@ -30,16 +30,35 @@
             android:layout_marginTop="88dp"
     />
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:layout_width="wrap_content"
-            android:layout_height="66dp"
-            app:menu="@menu/bottom_navigation_menu"
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
             android:background="@color/colorPrimary"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+    <Button
+            android:id="@+id/btnLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Link"
+            android:textColor="@color/white"
+            android:background="@color/colorPrimary"
+            android:layout_marginStart="30dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginTop="664dp"/>
+            app:layout_constraintStart_toStartOf="parent"/>
 
-
+    <Button
+            android:id="@+id/btnProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profile"
+            android:textColor="@color/black"
+            android:background="@color/colorPrimary"
+            android:layout_marginStart="290dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
     <RadioGroup
             android:id="@+id/radio_group_gender"
             android:layout_width="match_parent"

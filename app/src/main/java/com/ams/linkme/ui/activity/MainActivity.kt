@@ -5,9 +5,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -23,6 +22,8 @@ class MainActivity : AppCompatActivity() {
     private lateinit var interestText: EditText
     private lateinit var mainViewModel: MainViewModel
     private lateinit var userList: List<User>
+    private lateinit var selectedItem: String
+    private lateinit var btnProfile: Button
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,45 +31,39 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         linkButton = findViewById(R.id.linkbutton)
         interestText = findViewById(R.id.searchEditText)
+        btnProfile = findViewById(R.id.btnProfile)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
+
+        val spinner: Spinner = findViewById(R.id.spinner)
+        val options = arrayOf("Sport", "Food", "Dating","Games","Music","Anime","Other") // 替换为你的选项列表
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, options)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                selectedItem = parent.getItemAtPosition(position).toString()
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>) {
+                // 当没有选中项时的操作
+            }
+        }
         linkButton.setOnClickListener {
-            mainViewModel.link(interestText.text.toString().trim(), object : MainViewModel.LinkCallback {
+            mainViewModel.link(selectedItem, object : MainViewModel.LinkCallback {
                 override fun onLinkResult(userList: List<User>) {
                     handleUserList(userList)
                     // Log.d("debug-annotation", userList.toString())
                 }
             })
-            bottomNavigate()
         }
 
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.bottom_navigation_menu, menu)
-        return true
-    }
-
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_link -> {
-                Toast.makeText(this, "你已经在这一页了", Toast.LENGTH_SHORT).show()
-                true
-            }
-
-            R.id.menu_chat -> {
-                navigateToChatActivity()
-                true
-            }
-
-            R.id.menu_profile -> {
-                navigateToProfileActivity()
-                true
-            }
-
-            else -> super.onOptionsItemSelected(item)
+        btnProfile.setOnClickListener {
+            navigateToProfileActivity()
         }
+
+
     }
+
 
     private fun handleUserList(userList: List<User>) {
         // 获取RecyclerView视图组件
@@ -77,27 +72,6 @@ class MainActivity : AppCompatActivity() {
         // 创建并设置适配器
         val adapter = UserAdapter(userList)
     }
-    private fun bottomNavigate() {
-        val bottomNavigationView: BottomNavigationView = findViewById(R.id.bottomNavigationView)
-        bottomNavigationView.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.menu_link -> {
-                    Toast.makeText(this, "你已经在这一页了", Toast.LENGTH_SHORT).show()
-                    true
-                }
-                R.id.menu_chat -> {
-                    navigateToChatActivity()
-                    true
-                }
-                R.id.menu_profile -> {
-                    navigateToProfileActivity()
-                    true
-                }
-                else -> false
-            }
-        }
-    }
-
 
 
     private fun navigateToChatActivity() {
@@ -112,3 +86,4 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 }
+
