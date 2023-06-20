@@ -21,13 +21,15 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:text="@string/link_button"
-            android:layout_marginTop="600dp"
+            android:layout_marginBottom="60dp"
+            android:layout_alignParentBottom="true"
             android:background="@android:drawable/btn_default"/>
+
     <TextView
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:background="@color/colorPrimary"
-            android:layout_alignParentBottom="true"/>
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@color/colorPrimary"
+                android:layout_alignParentBottom="true"/>
 
 
     <Button
@@ -37,6 +39,7 @@
             android:text="Link"
             android:textColor="@color/yellow"
             android:layout_marginLeft="30dp"
+            android:drawableTop="@drawable/link2"
             android:background="@color/colorPrimary"
             android:layout_alignParentBottom="true"/>
 
@@ -49,6 +52,7 @@
             android:textColor="@color/white"
             android:layout_marginLeft="290dp"
             android:background="@color/colorPrimary"
+            android:drawableTop="@drawable/profile1"
             android:layout_alignParentBottom="true"/>
 
     <TextView
