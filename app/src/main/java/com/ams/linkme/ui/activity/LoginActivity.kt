@@ -16,7 +16,6 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var passwordEditText: EditText
     private lateinit var loginButton: Button
     private lateinit var registerButton: Button
-
     private lateinit var loginViewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,7 +43,7 @@ class LoginActivity : AppCompatActivity() {
                 }
 
                 else -> {
-                    Toast.makeText(this, "未知错误", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Unknown error", Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -56,7 +55,7 @@ class LoginActivity : AppCompatActivity() {
             if (email != "" && password != ""){
                 loginViewModel.login(email, password)
             } else {
-                Toast.makeText(this, "请输入用户名和密码", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter username and password", Toast.LENGTH_SHORT).show()
             }
         }
 

@@ -17,21 +17,21 @@ class RegisterViewModel : ViewModel() {
     private lateinit var firestore: FirebaseFirestore
 
 
-    fun register(username: String, email: String, password: String) {
+    fun register(email: String, password: String) {
         firestore = Firebase.firestore
         // 验证用户名和密码
-        if (username.isEmpty() || password.isEmpty() || email.isEmpty()) {
-            _registerResultLiveData.value = RegisterResult.Error("请填写所有字段")
+        if (email.isEmpty() || password.isEmpty()) {
+            _registerResultLiveData.value = RegisterResult.Error("Please fill in all fields")
             return
         }
 
         if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            _registerResultLiveData.value = RegisterResult.Error("请输入有效的电子邮箱地址")
+            _registerResultLiveData.value = RegisterResult.Error("Please enter a valid email address")
             return
         }
 
         if (password.length < 6) {
-            _registerResultLiveData.value = RegisterResult.Error("密码长度必须至少为6个字符")
+            _registerResultLiveData.value = RegisterResult.Error("The password must be at least 6 characters long")
             return
         }
 
@@ -42,25 +42,29 @@ class RegisterViewModel : ViewModel() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     val user: FirebaseUser? = firebaseAuth.currentUser
-                    _registerResultLiveData.value = RegisterResult.Success(user)
+                    val uid = user!!.uid
+                    _registerResultLiveData.value = RegisterResult.Success(user, email, password)
                     val postMap = hashMapOf<String, Any>()
-                    postMap["username"] = username
                     postMap["email"] = email
-
-                    firestore.collection("Users").add(postMap).addOnSuccessListener {
-                        RegisterResult.Success(user)
+                    postMap["uid"] = uid
+                    firestore.collection("Users").document(uid).set(postMap).addOnSuccessListener {
+                        RegisterResult.Success(user, email, password)
                     }
                 } else {
                     _registerResultLiveData.value =
-                        RegisterResult.Error("注册失败：" + task.exception?.message)
+                        RegisterResult.Error("Registration failed：" + task.exception?.message)
                 }
             }
     }
 
     sealed class RegisterResult {
-        data class Success(val user: FirebaseUser?) : RegisterResult()
+        data class Success(val user: FirebaseUser?, val email: String, val password: String) : RegisterResult()
         data class Error(val errorMessage: String) : RegisterResult()
     }
 }
+
+
+
+
 
 

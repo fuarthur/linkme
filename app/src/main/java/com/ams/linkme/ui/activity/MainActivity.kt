@@ -2,44 +2,75 @@ package com.ams.linkme.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import android.view.MenuItem
-import android.widget.Toast
+
+import android.view.View
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.ams.linkme.R
+import com.ams.linkme.adapter.UserAdapter
+import com.ams.linkme.model.User
+import com.ams.linkme.ui.viewmodel.MainViewModel
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var linkButton: Button
+    private lateinit var interestText: TextView
+    private lateinit var mainViewModel: MainViewModel
+    private lateinit var selectedItem: String
+    private lateinit var btnProfile: Button
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-    }
+        linkButton = findViewById(R.id.linkbutton)
+        interestText = findViewById(R.id.searchEditText)
+        btnProfile = findViewById(R.id.btnProfile)
+        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.bottom_navigation_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_link -> {
-                Toast.makeText(this, "你已经在这一页了", Toast.LENGTH_SHORT).show()
-                true
+        val spinner: Spinner = findViewById(R.id.spinner)
+        val options = arrayOf("Sport", "Food", "Dating", "Games", "Music", "Anime", "Other") // 替换为你的选项列表
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, options)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                selectedItem = parent.getItemAtPosition(position).toString()
             }
 
-            R.id.menu_chat -> {
-                navigateToChatActivity()
-                true
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+                TODO("Not yet implemented")
             }
+        }
+        linkButton.setOnClickListener {
+            mainViewModel.link(selectedItem, object : MainViewModel.LinkCallback {
+                override fun onLinkResult(userList: List<User>) {
+                    handleUserList(userList)
+                    // Log.d("debug-annotation", userList.toString())
+                }
+            })
+        }
 
-            R.id.menu_profile -> {
-                navigateToProfileActivity()
-                true
-            }
-
-            else -> super.onOptionsItemSelected(item)
+        btnProfile.setOnClickListener {
+            navigateToProfileActivity()
         }
     }
+
+
+    private fun handleUserList(userList: List<User>) {
+        val shuffledList = userList.toMutableList()
+        shuffledList.shuffle()
+        // 获取RecyclerView视图组件
+        val recyclerView: RecyclerView = findViewById(R.id.userRecyclerView)
+
+        // 创建并设置适配器
+        val adapter = UserAdapter(shuffledList)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
+    }
+
 
     private fun navigateToChatActivity() {
         val intent = Intent(this@MainActivity, ChatActivity::class.java)
@@ -52,5 +83,4 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
     }
-
 }

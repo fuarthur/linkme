@@ -4,74 +4,91 @@
                 android:layout_height="match_parent" xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:orientation="vertical">
 
-    <ImageView
-            android:id="@+id/title_logo"
-            android:layout_width="100px"
-            android:layout_height="100px"
-            android:src="@drawable/logolink"
-            android:layout_marginLeft="500px"
-            android:layout_marginTop="50px"
-    />
 
-
-    <!-- Add your content here -->
     <TextView
             android:id="@+id/text_view_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="LINK"
+            android:text="@string/link"
             android:textSize="18sp"
             android:textStyle="bold"
             android:padding="16dp"
             android:background="@color/colorPrimary"
             android:textColor="@android:color/white"/>
+
     <Button
             android:id="@+id/linkbutton"
             android:layout_width="match_parent"
-            android:layout_height="150px"
-            android:text="LINK ME!"
-            android:layout_marginTop="1500px"
+            android:layout_height="60dp"
+            android:text="@string/link_button"
+            android:layout_marginBottom="60dp"
+            android:layout_alignParentBottom="true"
             android:background="@android:drawable/btn_default"/>
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:layout_width="match_parent"
-            android:layout_height="180px"
-            app:menu="@menu/bottom_navigation_menu"
-            android:layout_marginTop="1760px"
-            android:background="@color/colorPrimary"/>
+    <TextView
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@color/colorPrimary"
+                android:layout_alignParentBottom="true"/>
+
+
+    <Button
+            android:id="@+id/btnLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/link"
+            android:textColor="@color/yellow"
+            android:layout_marginLeft="30dp"
+            android:drawableTop="@drawable/link2"
+            android:background="@color/colorPrimary"
+            android:layout_alignParentBottom="true"/>
+
+
+    <Button
+            android:id="@+id/btnProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/profile"
+            android:textColor="@color/white"
+            android:layout_marginLeft="290dp"
+            android:background="@color/colorPrimary"
+            android:drawableTop="@drawable/profile1"
+            android:layout_alignParentBottom="true"/>
 
     <TextView
             android:id="@+id/textViewTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="User Information"
+            android:text="@string/user_information"
             android:textSize="20sp"
             android:textStyle="bold"
             android:padding="16dp"
-            android:layout_marginTop="350px"/>
-    <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="550px"/>
+            android:layout_marginTop="140dp"/>
 
 
-
-    <ImageView
-            android:layout_width="300px"
-            android:layout_height="300px"
-            android:layout_marginTop="1120px"
-            android:layout_marginLeft="398px"
-            android:src="@drawable/abc"/>
-
-    <EditText
+    <TextView
             android:id="@+id/searchEditText"
-            android:layout_width="800px"
+            android:layout_width="180dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="150px"
-            android:layout_marginTop="200px"
-            android:hint="Enter the hobby you want to link to"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="95dp"
+            android:hint="@string/link_hint"
+            android:textSize="18dp"
             android:inputType="text"
-            android:maxLines="1" />
+            android:maxLines="1"
+            android:minHeight="48dp"/>
+    <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="95dp"
+            android:layout_marginLeft="300dp" android:minHeight="48dp"/>
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/userRecyclerView"
+            android:layout_marginTop="200dp"
+            android:layout_width="match_parent"
+            android:layout_height="570dp"
+    />
 
 
 </RelativeLayout>

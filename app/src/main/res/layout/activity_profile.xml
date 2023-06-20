@@ -4,32 +4,21 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
-    <Button
-            android:id="@+id/profile_button"
-            android:layout_width="129dp"
-            android:layout_height="52dp"
-            android:text="@string/Picture_hint"
-            android:background="@color/colorPrimary"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_marginStart="173dp"
-            app:layout_marginTop="251dp"
-            android:layout_marginTop="172dp"
-            android:layout_marginStart="252dp"/>
-    <RadioButton
-            android:id="@+id/radio_button_male"
-            android:layout_width="80dp"
+    <TextView
+            android:id="@+id/profile_text_view_title"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/male"
+            android:text="@string/profile"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:padding="16dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_marginStart="225dp"
-            app:layout_marginTop="243dp"
-            android:layout_marginTop="225dp"
-            android:layout_marginStart="243dp"/>
+            android:background="@color/colorPrimary"
+            android:textColor="@android:color/white"/>
+
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -37,75 +26,96 @@
             android:id="@+id/imageView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_marginStart="45dp"
-            app:layout_marginTop="252dp"
-            android:layout_marginTop="45dp"
-            android:layout_marginStart="252dp"/>
-    <RadioButton
-            android:id="@+id/radio_button_female"
+            android:layout_marginStart="140dp"
+            android:layout_marginTop="88dp"
+    />
+
+
+    <TextView
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="@color/colorPrimary"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+    <Button
+            android:id="@+id/btnLink"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/female"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_marginStart="225dp"
-            app:layout_marginTop="323dp"
-            android:layout_marginTop="225dp"
-            android:layout_marginStart="323dp"/>
+            android:text="Link"
+            android:textColor="@color/white"
+            android:background="@color/colorPrimary"
+            android:layout_marginStart="30dp"
+            android:drawableTop="@drawable/link1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
 
+    <Button
+            android:id="@+id/btnProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profile"
+            android:textColor="@color/yellow"
+            android:background="@color/colorPrimary"
+            android:layout_marginStart="290dp"
+            android:drawableTop="@drawable/profile2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
     <RadioGroup
             android:id="@+id/radio_group_gender"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="312dp"
+            android:layout_marginStart="116dp">
+
+        <RadioButton
+                android:id="@+id/radio_button_male"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/male"
+                android:minHeight="48dp"/>
+
+        <RadioButton
+                android:id="@+id/radio_button_female"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/female"
+                android:minHeight="48dp"/>
 
     </RadioGroup>
     <EditText
             android:id="@+id/edit_text_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="234dp"
+            android:layout_height="48dp"
             android:hint="@string/name"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="216dp"
+            android:layout_marginStart="88dp"/>
+
     <EditText
-            android:text="@string/e_mail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:inputType="textEmailAddress"
-            android:ems="10"
-            android:id="@+id/editTextTextEmailAddress"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_marginStart="45dp"
-            app:layout_marginTop="6dp"
-            android:layout_marginTop="45dp"
-            android:layout_marginStart="6dp"/>
-    <EditText
-            android:text="@string/phone"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:hint="@string/phone"
+            android:layout_width="234dp"
+            android:layout_height="48dp"
             android:inputType="phone"
             android:ems="10"
             android:id="@+id/editTextPhone"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_marginStart="105dp"
-            app:layout_marginTop="6dp"
-            android:layout_marginTop="105dp"
-            android:layout_marginStart="6dp"/>
+            android:layout_marginStart="88dp"
+            android:layout_marginTop="264dp"
+            android:minHeight="48dp"/>
     <Button
             android:text="@string/submit"
-            android:layout_width="403dp"
-            android:layout_height="60dp"
+            android:layout_width="209dp"
+            android:layout_height="57dp"
             android:id="@+id/button"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_marginStart="670dp"
-            app:layout_marginTop="4dp"
-            android:layout_marginTop="670dp"
-            android:layout_marginStart="4dp"/>
+            android:layout_marginStart="104dp"
+            android:layout_marginTop="524dp"
+    />
     <CheckBox
             android:text="@string/sports"
             android:layout_width="100dp"
@@ -113,10 +123,10 @@
             android:id="@+id/Sports"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_marginStart="246dp"
-            app:layout_marginTop="22dp"
-            android:layout_marginTop="246dp"
-            android:layout_marginStart="22dp"/>
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="420dp"
+            android:minHeight="48dp"/>
+
     <CheckBox
             android:text="@string/food"
             android:layout_width="100dp"
@@ -124,10 +134,9 @@
             android:id="@+id/Food"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_marginStart="291dp"
-            app:layout_marginTop="22dp"
-            android:layout_marginTop="291dp"
-            android:layout_marginStart="22dp"/>
+            android:layout_marginStart="116dp"
+            android:layout_marginTop="420dp"
+            android:minHeight="48dp"/>
     <CheckBox
             android:text="@string/dating"
             android:layout_width="100dp"
@@ -135,10 +144,9 @@
             android:id="@+id/Dating"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_marginStart="22dp"
-            app:layout_marginTop="10dp"
-            android:layout_marginTop="332dp"
-            android:layout_marginStart="22dp"/>
+            android:layout_marginStart="216dp"
+            android:layout_marginTop="420dp"
+            android:minHeight="48dp"/>
     <CheckBox
             android:text="@string/games"
             android:layout_width="100dp"
@@ -146,10 +154,9 @@
             android:id="@+id/Games"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_marginStart="378dp"
-            app:layout_marginTop="22dp"
-            android:layout_marginTop="378dp"
-            android:layout_marginStart="22dp"/>
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="468dp"
+            android:minHeight="48dp"/>
     <CheckBox
             android:text="@string/music"
             android:layout_width="100dp"
@@ -157,10 +164,9 @@
             android:id="@+id/Music"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_marginStart="419dp"
-            app:layout_marginTop="22dp"
-            android:layout_marginTop="419dp"
-            android:layout_marginStart="22dp"/>
+            android:layout_marginStart="116dp"
+            android:layout_marginTop="468dp"
+            android:minHeight="48dp"/>
     <CheckBox
             android:text="@string/anime"
             android:layout_width="100dp"
@@ -168,10 +174,9 @@
             android:id="@+id/Anime"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_marginStart="506dp"
-            app:layout_marginTop="22dp"
-            android:layout_marginTop="506dp"
-            android:layout_marginStart="22dp"/>
+            android:layout_marginStart="216dp"
+            android:layout_marginTop="468dp"
+            android:minHeight="48dp"/>
     <CheckBox
             android:text="@string/movie"
             android:layout_width="100dp"
@@ -179,21 +184,19 @@
             android:id="@+id/Movie"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_marginStart="462dp"
-            app:layout_marginTop="22dp"
-            android:layout_marginTop="462dp"
-            android:layout_marginStart="22dp"/>
+            android:layout_marginStart="462dp"
+            android:layout_marginTop="22dp"
+            android:minHeight="48dp"/>
+
     <TextView
             android:text="@string/select_your_interests"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="219dp"
+            android:layout_height="95dp"
             android:id="@+id/textView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_marginStart="207dp"
-            app:layout_marginTop="25dp"
-            android:layout_marginTop="200dp"
             android:layout_marginStart="16dp"
+            android:layout_marginTop="372dp"
             android:textSize="20sp"/>
     <CheckBox
             android:text="@string/other"
@@ -202,10 +205,9 @@
             android:id="@+id/Other"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_marginStart="539dp"
-            app:layout_marginTop="22dp"
-            android:layout_marginTop="550dp"
-            android:layout_marginStart="22dp"/>
+            android:layout_marginStart="316dp"
+            android:layout_marginTop="420dp"
+            android:minHeight="48dp"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

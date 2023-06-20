@@ -24,15 +24,6 @@
             android:paddingBottom="16dp" />
 
     <EditText
-            android:id="@+id/edit_text_username"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/username"
-            android:inputType="text"
-            android:padding="8dp"
-            android:layout_marginBottom="16dp" android:minHeight="48dp" android:autofillHints=""/>
-
-    <EditText
             android:id="@+id/edit_text_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
