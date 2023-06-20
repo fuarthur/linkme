@@ -29,6 +29,7 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var other: CheckBox
     private lateinit var profileViewModel: ProfileViewModel
     private lateinit var gotolink: Button
+    private lateinit var editTextName: EditText
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +52,7 @@ class ProfileActivity : AppCompatActivity() {
         anime = findViewById(R.id.Anime)
         other = findViewById(R.id.Other)
         gotolink = findViewById(R.id.btnLink)
+        editTextName = findViewById(R.id.edit_text_name)
         profileViewModel = ViewModelProvider(this)[ProfileViewModel::class.java]
 
         submitButton.setOnClickListener {
@@ -87,15 +89,16 @@ class ProfileActivity : AppCompatActivity() {
             if (other.isChecked) {
                 interests.add("Other")
             }
+            val name = editTextName.text.toString().trim()
             val auth = FirebaseAuth.getInstance()
             val user = auth.currentUser
             val uid = user!!.uid // The user's ID, unique to the Firebase project.
-            profileViewModel.submit(uid, gender, phone, interests)
-            Toast.makeText(this,"提交成功",Toast.LENGTH_SHORT).show()
+            profileViewModel.submit(name, uid, gender, phone, interests)
+            Toast.makeText(this, "提交成功", Toast.LENGTH_SHORT).show()
             navigateToMainActivity()
         }
 
-        gotolink.setOnClickListener{
+        gotolink.setOnClickListener {
             navigateToMainActivity()
         }
     }
