@@ -40,6 +40,7 @@
             android:background="@color/colorPrimary"
             android:layout_alignParentBottom="true"/>
 
+
     <Button
             android:id="@+id/btnProfile"
             android:layout_width="wrap_content"
@@ -63,7 +64,7 @@
 
     <TextView
             android:id="@+id/searchEditText"
-            android:layout_width="300dp"
+            android:layout_width="180dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="95dp"
@@ -78,7 +79,6 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="95dp"
             android:layout_marginLeft="300dp" android:minHeight="48dp"/>
-
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/userRecyclerView"
             android:layout_marginTop="200dp"

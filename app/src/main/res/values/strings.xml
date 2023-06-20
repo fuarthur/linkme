@@ -29,7 +29,7 @@
     <string name="send">Send</string>
     <string name="link_button">LINK ME!</string>
     <string name="user_information">User Information</string>
-    <string name="link_hint">Select the hobby you want to link to</string>
+    <string name="link_hint">Select the interests \n you want to link to</string>
     <string name="username_placeholder">Username: %s</string>
     <string name="email_placeholder">Email: %s</string>
     <string name="gender_placeholder">Gender: %s</string>
