@@ -1,95 +1,123 @@
 package com.ams.linkme.ui.activity
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ams.linkme.R
 import com.ams.linkme.adapter.MessageAdapter
 import com.ams.linkme.model.Message
-import com.ams.linkme.ui.viewmodel.ChatViewModel
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.ChildEventListener
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.Query
-import com.google.firebase.database.ktx.database
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
 class ChatActivity : AppCompatActivity() {
 
-    private lateinit var chatViewModel: ChatViewModel
-    private lateinit var messageAdapter: MessageAdapter
-    private lateinit var messageQuery: Query
-    private lateinit var childEventListener: ChildEventListener
+    private lateinit var currentUserId: String
+    private lateinit var targetUserId: String
+    private lateinit var firestore: FirebaseFirestore
+    private lateinit var auth: FirebaseAuth
+    private lateinit var editTextMessage: EditText
     private lateinit var sendButton: Button
-    private lateinit var messageEditText: EditText
     private lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat)
 
-        chatViewModel = ViewModelProvider(this)[ChatViewModel::class.java]
-
-        setupRecyclerView()
-        setupMessageQuery()
-        setupMessageListener()
-
+        recyclerView = findViewById(R.id.recycler_view_chat)
+        auth = FirebaseAuth.getInstance()
+        currentUserId = auth.currentUser!!.uid
+        targetUserId = intent.getStringExtra("userId").toString()
+        firestore = Firebase.firestore
+        editTextMessage = findViewById(R.id.edit_text_message)
         sendButton = findViewById(R.id.button_send)
-        messageEditText = findViewById(R.id.edit_text_message)
-
         sendButton.setOnClickListener {
-            val messageText = messageEditText.text.toString().trim()
-            if (messageText.isNotEmpty()) {
-                val currentUser = FirebaseAuth.getInstance().currentUser
-                if (currentUser != null) {
-                    // chatViewModel.sendMessage(messageText)
-                    messageEditText.setText("")
+            val content = editTextMessage.text.toString()
+            if (content != "") {
+                send(content)
+            }
+        }
+        updateUI()
+    }
+
+    private fun send(content: String) {
+        val postMap = hashMapOf<String, Any>()
+        postMap["content"] = content
+        postMap["senderId"] = currentUserId
+        postMap["receiveId"] = targetUserId
+        postMap["timestamp"] = com.google.firebase.Timestamp.now()
+        firestore.collection("Messages").add(postMap).addOnSuccessListener { documentReference ->
+            val delayMillis = 100
+            val handler = Handler(Looper.getMainLooper())
+            handler.postDelayed({
+                updateUI()
+                editTextMessage.text.clear()
+            }, delayMillis.toLong())
+        }.addOnFailureListener {
+            Toast.makeText(this, "Unknown error", Toast.LENGTH_LONG).show()
+        }
+    }
+
+
+    private fun updateUI() {
+        recyclerView.layoutManager = LinearLayoutManager(this)
+
+        val query1 = firestore.collection("Messages")
+            .whereEqualTo("senderId", currentUserId)
+            .whereEqualTo("receiveId", targetUserId)
+            .orderBy("timestamp")
+            .get()
+
+        val query2 = firestore.collection("Messages")
+            .whereEqualTo("senderId", targetUserId)
+            .whereEqualTo("receiveId", currentUserId)
+            .orderBy("timestamp")
+            .get()
+
+        val combinedQuery = Tasks.whenAllSuccess<QuerySnapshot>(query1, query2)
+        combinedQuery.addOnSuccessListener { taskSnapshots ->
+            val messages = mutableListOf<Message>()
+
+            for (snapshot in taskSnapshots) {
+                val querySnapshot = snapshot as QuerySnapshot
+
+                for (document in querySnapshot) {
+                    val content = document.getString("content")
+                    val senderId = document.getString("senderId")
+                    val timestamp = document.getTimestamp("timestamp")?.toDate()?.time
+                    val message = Message(targetUserId, senderId, content, timestamp)
+                    messages.add(message)
                 }
             }
+
+            Log.d("DEBUG", messages.toString())
+
+            // 获取RecyclerView视图组件
+            val recyclerView: RecyclerView = findViewById(R.id.recycler_view_chat)
+
+            // 创建并设置适配器
+            val adapter = MessageAdapter(messages)
+            recyclerView.adapter = adapter
+
+            // 滚动到最后一条消息
+            recyclerView.scrollToPosition(messages.size - 1)
+
+        }
+        combinedQuery.addOnFailureListener { exception ->
+            Toast.makeText(this, "Failed to fetch messages: ${exception.message}", Toast.LENGTH_SHORT).show()
         }
 
     }
 
-    private fun setupRecyclerView() {
-        messageAdapter = MessageAdapter()
-        val layoutManager = LinearLayoutManager(this)
-        layoutManager.stackFromEnd = true
-        recyclerView.layoutManager = layoutManager
-        recyclerView.adapter = messageAdapter
-    }
-
-    private fun setupMessageQuery() {
-        val chatId = intent.getStringExtra("chatId") ?: ""
-        val databaseReference = Firebase.database.reference.child("chats").child(chatId).child("messages")
-        messageQuery = databaseReference.orderByChild("timestamp")
-    }
-
-    private fun setupMessageListener() {
-        childEventListener = object : ChildEventListener {
-            override fun onChildAdded(snapshot: DataSnapshot, previousChildName: String?) {
-                val message = snapshot.getValue(Message::class.java)
-                if (message != null) {
-                    messageAdapter.addMessage(message)
-                    recyclerView.smoothScrollToPosition(messageAdapter.itemCount - 1)
-                }
-            }
-
-            override fun onChildChanged(snapshot: DataSnapshot, previousChildName: String?) {}
-            override fun onChildRemoved(snapshot: DataSnapshot) {}
-            override fun onChildMoved(snapshot: DataSnapshot, previousChildName: String?) {}
-            override fun onCancelled(error: DatabaseError) {}
-        }
-
-        messageQuery.addChildEventListener(childEventListener)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        messageQuery.removeEventListener(childEventListener)
-    }
 }
+

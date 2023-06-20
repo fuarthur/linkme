@@ -35,4 +35,6 @@
     <string name="gender_placeholder">Gender: %s</string>
     <string name="phone_placeholder">Phone: %s</string>
     <string name="interests_placeholder">Interests: %s</string>
+    <string name="sample_receive_message">This is receive message</string>
+    <string name="sample_sent_message">This is sent message</string>
 </resources>

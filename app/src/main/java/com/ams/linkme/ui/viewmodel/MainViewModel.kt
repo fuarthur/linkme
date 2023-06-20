@@ -1,6 +1,5 @@
 package com.ams.linkme.ui.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.ams.linkme.model.User
 import com.google.firebase.auth.FirebaseAuth
@@ -37,7 +36,8 @@ class MainViewModel : ViewModel() {
                     val gender = document.getString("gender")
                     val phone = document.getString("phone")
                     val interests = document.get("interests") as? ArrayList<String>
-                    val user = User(username, email, gender, phone, interests)
+                    val uid = document.getString("uid")
+                    val user = User(username, email, gender, phone, interests, uid)
                     userList.add(user)
                 }
                 callback.onLinkResult(userList)

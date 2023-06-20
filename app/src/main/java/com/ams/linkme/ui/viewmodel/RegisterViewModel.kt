@@ -46,7 +46,7 @@ class RegisterViewModel : ViewModel() {
                     _registerResultLiveData.value = RegisterResult.Success(user, email, password)
                     val postMap = hashMapOf<String, Any>()
                     postMap["email"] = email
-
+                    postMap["uid"] = uid
                     firestore.collection("Users").document(uid).set(postMap).addOnSuccessListener {
                         RegisterResult.Success(user, email, password)
                     }
