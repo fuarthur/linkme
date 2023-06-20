@@ -28,7 +28,7 @@ class MainViewModel : ViewModel() {
         firestore.collection("Users")
             .whereArrayContains("interests", interest)
             .whereNotEqualTo(FieldPath.documentId(), currentUserUid)
-            .limit(3)
+            .limit(100)
             .get()
             .addOnSuccessListener { querySnapshot ->
                 for (document in querySnapshot) {

@@ -2,9 +2,7 @@ package com.ams.linkme.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.view.Menu
-import android.view.MenuItem
+
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
@@ -15,13 +13,11 @@ import com.ams.linkme.R
 import com.ams.linkme.adapter.UserAdapter
 import com.ams.linkme.model.User
 import com.ams.linkme.ui.viewmodel.MainViewModel
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var linkButton: Button
-    private lateinit var interestText: EditText
+    private lateinit var interestText: TextView
     private lateinit var mainViewModel: MainViewModel
-    private lateinit var userList: List<User>
     private lateinit var selectedItem: String
     private lateinit var btnProfile: Button
 
@@ -35,7 +31,7 @@ class MainActivity : AppCompatActivity() {
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         val spinner: Spinner = findViewById(R.id.spinner)
-        val options = arrayOf("Sport", "Food", "Dating","Games","Music","Anime","Other") // 替换为你的选项列表
+        val options = arrayOf("Sport", "Food", "Dating", "Games", "Music", "Anime", "Other") // 替换为你的选项列表
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, options)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         spinner.adapter = adapter
@@ -44,8 +40,8 @@ class MainActivity : AppCompatActivity() {
                 selectedItem = parent.getItemAtPosition(position).toString()
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>) {
-                // 当没有选中项时的操作
+            override fun onNothingSelected(p0: AdapterView<*>?) {
+                TODO("Not yet implemented")
             }
         }
         linkButton.setOnClickListener {
@@ -60,17 +56,19 @@ class MainActivity : AppCompatActivity() {
         btnProfile.setOnClickListener {
             navigateToProfileActivity()
         }
-
-
     }
 
 
     private fun handleUserList(userList: List<User>) {
+        val shuffledList = userList.toMutableList()
+        shuffledList.shuffle()
         // 获取RecyclerView视图组件
         val recyclerView: RecyclerView = findViewById(R.id.userRecyclerView)
 
         // 创建并设置适配器
-        val adapter = UserAdapter(userList)
+        val adapter = UserAdapter(shuffledList)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(this)
     }
 
 
@@ -86,4 +84,3 @@ class MainActivity : AppCompatActivity() {
         finish()
     }
 }
-
