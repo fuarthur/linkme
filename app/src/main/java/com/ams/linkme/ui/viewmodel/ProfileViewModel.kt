@@ -10,7 +10,7 @@ class ProfileViewModel : ViewModel() {
     private lateinit var firestore: FirebaseFirestore
 
 
-    fun submit(uid: String, gender: String, phone: String, interests: ArrayList<String>) {
+    fun submit(name: String, uid: String, gender: String, phone: String, interests: ArrayList<String>) {
         firestore = Firebase.firestore
 
         // 获取当前用户的现有数据
@@ -21,6 +21,7 @@ class ProfileViewModel : ViewModel() {
 
                 // 创建新的数据更新映射
                 val updatedData = HashMap<String, Any>(existingData ?: hashMapOf())
+                updatedData["username"] = name
                 updatedData["gender"] = gender
                 updatedData["phone"] = phone
                 updatedData["interests"] = interests
