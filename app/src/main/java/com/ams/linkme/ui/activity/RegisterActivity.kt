@@ -39,7 +39,7 @@ class RegisterActivity : AppCompatActivity() {
         registerViewModel.registerResultLiveData.observe(this) { result ->
             when (result) {
                 is RegisterViewModel.RegisterResult.Success -> {
-                    Toast.makeText(this, "注册成功，请设置个人档案", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Registration successful, please set your personal profile", Toast.LENGTH_SHORT).show()
                     loginViewModel.login(result.email, result.password)
                     navigateToProfileActivity()
                 }
@@ -49,7 +49,7 @@ class RegisterActivity : AppCompatActivity() {
                 }
 
                 else -> {
-                    Toast.makeText(this, "未知错误", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Unknown error", Toast.LENGTH_SHORT).show()
                 }
             }
         }

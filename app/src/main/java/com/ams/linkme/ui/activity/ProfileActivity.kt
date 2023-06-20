@@ -94,39 +94,12 @@ class ProfileActivity : AppCompatActivity() {
             val user = auth.currentUser
             val uid = user!!.uid // The user's ID, unique to the Firebase project.
             profileViewModel.submit(name, uid, gender, phone, interests)
-            Toast.makeText(this, "提交成功", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Successfully submitted", Toast.LENGTH_SHORT).show()
             navigateToMainActivity()
         }
 
         gotolink.setOnClickListener {
             navigateToMainActivity()
-        }
-    }
-
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.bottom_navigation_menu, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_link -> {
-                navigateToMainActivity()
-                true
-            }
-
-            R.id.menu_chat -> {
-                navigateToChatActivity()
-                true
-            }
-
-            R.id.menu_profile -> {
-                Toast.makeText(this, "你已经在这一页了", Toast.LENGTH_SHORT).show()
-                true
-            }
-
-            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -136,10 +109,5 @@ class ProfileActivity : AppCompatActivity() {
         finish()
     }
 
-    private fun navigateToChatActivity() {
-        val intent = Intent(this@ProfileActivity, ChatActivity::class.java)
-        startActivity(intent)
-        finish()
-    }
 }
 
