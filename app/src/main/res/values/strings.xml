@@ -1,16 +1,12 @@
 <resources>
     <string name="app_name" translatable="false">Link Me</string>
-    <string name="username">username</string>
     <string name="password">password</string>
     <string name="login">Login</string>
     <string name="register">Register</string>
-    <string name="repeatPassword">Repeat Password</string>
     <string name="link">Link</string>
-    <string name="chat">Chat</string>
     <string name="profile">Profile</string>
     <string name="back">&lt;</string>
     <string name="male">Male</string>
-    <string name="Picture_hint">change picture</string>
     <string name="sports">Sports</string>
     <string name="submit">Submit</string>
     <string name="food">Food</string>
