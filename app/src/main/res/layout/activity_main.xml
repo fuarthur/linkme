@@ -15,6 +15,7 @@
             android:padding="16dp"
             android:background="@color/colorPrimary"
             android:textColor="@android:color/white"/>
+
     <Button
             android:id="@+id/linkbutton"
             android:layout_width="match_parent"
@@ -22,7 +23,6 @@
             android:text="@string/link_button"
             android:layout_marginTop="600dp"
             android:background="@android:drawable/btn_default"/>
-
     <TextView
             android:layout_width="match_parent"
             android:layout_height="60dp"
@@ -35,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Link"
-            android:textColor="@color/black"
+            android:textColor="@color/yellow"
             android:layout_marginLeft="30dp"
             android:background="@color/colorPrimary"
             android:layout_alignParentBottom="true"/>
