@@ -65,7 +65,7 @@
             android:id="@+id/searchEditText"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="30dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginTop="95dp"
             android:hint="@string/link_hint"
             android:textSize="18dp"
@@ -77,7 +77,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="95dp"
-            android:layout_marginLeft="320dp"/>
+            android:layout_marginLeft="300dp"/>
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/userRecyclerView"
