@@ -36,7 +36,7 @@
             android:id="@+id/btnLink"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Link"
+            android:text="@string/link"
             android:textColor="@color/yellow"
             android:layout_marginLeft="30dp"
             android:drawableTop="@drawable/link2"
@@ -48,7 +48,7 @@
             android:id="@+id/btnProfile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Profile"
+            android:text="@string/profile"
             android:textColor="@color/white"
             android:layout_marginLeft="290dp"
             android:background="@color/colorPrimary"
@@ -87,7 +87,7 @@
             android:id="@+id/userRecyclerView"
             android:layout_marginTop="200dp"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
+            android:layout_height="570dp"
     />
 
 

@@ -3,7 +3,6 @@ package com.ams.linkme.ui.activity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -86,6 +85,7 @@ class ChatActivity : AppCompatActivity() {
 
         val combinedQuery = Tasks.whenAllSuccess<QuerySnapshot>(query1, query2)
         combinedQuery.addOnSuccessListener { taskSnapshots ->
+
             val messages = mutableListOf<Message>()
 
             for (snapshot in taskSnapshots) {
@@ -100,7 +100,8 @@ class ChatActivity : AppCompatActivity() {
                 }
             }
 
-            Log.d("DEBUG", messages.toString())
+            // 对消息列表按照时间戳进行排序
+            messages.sortBy { it.timestamp }
 
             // 获取RecyclerView视图组件
             val recyclerView: RecyclerView = findViewById(R.id.recycler_view_chat)
@@ -111,8 +112,8 @@ class ChatActivity : AppCompatActivity() {
 
             // 滚动到最后一条消息
             recyclerView.scrollToPosition(messages.size - 1)
-
         }
+
         combinedQuery.addOnFailureListener { exception ->
             Toast.makeText(this, "Failed to fetch messages: ${exception.message}", Toast.LENGTH_SHORT).show()
         }
