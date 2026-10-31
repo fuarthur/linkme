@@ -52,7 +52,7 @@ Files: create ui/activity/InterestsActivity.kt, ui/viewmodel/InterestsViewModel.
 - [x] Independent whole-change code review and native rendered review; resolve material findings.
 - [x] Capture phone, dark, font1.3 and compact layouts with stable rendered frames.
 - [x] Verify all security/device/unit checks; build normal production-config debug and release APKs; validate flags/signatures/hashes.
-- [ ] Publish the exact tested schema candidate and enable the new index, retaining Spark and existing data; verify live state and handle any required final action approval.
+- [x] Publish the exact tested schema candidate and enable the new index, retaining Spark and existing data; verify live state and handle any required final action approval.
 - [x] Update PRODUCT/DESIGN/README/review/progress and artifacts; save local branch, preserving old2.0 artifacts and existing production data.
 
-Final rollout checkpoint: all local implementation/review/build/artifact steps are complete. The interest-key index is Enabled; publication of rule hash298b5b...97f8d awaits explicit approval after automatic approval review rejected it. Existing production documents and free Spark billing are unchanged.
+Final rollout checkpoint: all implementation/review/build/artifact steps are complete. The user explicitly approved rule hash298b5b...97f8d; it was published and verified at00:52 October31 America/Chicago. All8 indexes are Enabled, four anonymous probes return403, and existing production documents/free Spark billing are unchanged.

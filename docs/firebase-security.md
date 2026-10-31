@@ -1,8 +1,8 @@
 # Firebase security and deployment verification
 
-The last recorded production check on October 30, 2026 at 11:04 PM America/Chicago verified the restrictive policy in the existing `linkme-e0b8d` project, seven enabled indexes, Email/Password authentication, denied anonymous probes, and Spark at $0. The October31 checkpoint below verifies the eighth interest-key index Enabled and the exact177-test candidate prepared in the editor. Publication was rejected by automatic approval review and awaits explicit approval; the new policy is not live. This work does not change billing or production data. The implementation uses Authentication, Firestore, local test emulators and initial avatars, with no Cloud Functions or paid Storage dependency.
+The latest production verification on **October31,2026 at00:53 America/Chicago** confirmed the explicitly approved2.1 policy in `linkme-e0b8d`, all8 indexes Enabled, four denied anonymous probes and Spark at $0/month. The deployed rule text is10,984 bytes and exactly matches the177-test candidate, SHA-256 `298b5b565ce300da32c0753bac087e004e7852030b089b4f54e2995460a97f8d`. Existing production documents are retained. The final rollout record is at the end; the October30 snapshot below is historical. No billing, paid Storage, Functions or SMS dependency was added.
 
-## Verified production deployment
+## Previous production deployment — October30 historical snapshot
 
 The main task published and verified this production snapshot at **2026-10-30 23:04 America/Chicago**:
 
@@ -32,7 +32,7 @@ The published policy includes canonical conversation identity and reciprocal fre
 
 Unmatched documents are denied. Private profile ownership does not grant access to another user’s private document or block list. Blocking prevents both directions of new message and summary writes; it retains participant access to existing history.
 
-The candidate requires the six existing public fields: `uid`, `username`, `bio`, `interests`, `discoverable`, and `updatedAt`. The only optional field is `interestKeys`. Email, phone, gender, arbitrary roles, and every other additional field remain denied. Names have 1–40 UTF-16 code units and bios 0–240. Publication uses a server timestamp. Legacy accounts publish only after saving their own profile; there is no blanket copy from private `Users` documents.
+The2.1 policy requires the six existing public fields: `uid`, `username`, `bio`, `interests`, `discoverable`, and `updatedAt`. The only optional field is `interestKeys`. Email, phone, gender, arbitrary roles, and every other additional field remain denied. Names have 1–40 UTF-16 code units and bios 0–240. Publication uses a server timestamp. Legacy accounts publish only after saving their own profile; there is no blanket copy from private `Users` documents.
 
 Interests are now 1–16 unique string labels, each 1–40 UTF-16 code units. Custom topics are accepted. Every possible element is checked; C0/C1 controls and labels made entirely of Unicode whitespace or format characters (including zero-width text) are denied. The app performs NFKC, Unicode whitespace, alias, and case normalization before publication; the rules independently enforce structural safety and exact-string uniqueness without attempting to reproduce the catalog.
 
@@ -144,12 +144,34 @@ The index file was checked to contain exactly the seven previous definitions plu
 
 Reproduce the complete security suite with the existing `npm test` command documented above. Local ignored evidence is retained in `firebase-tests/interest-red.log`, `firebase-tests/interest-key-shape-red.log` and `firebase-tests/interest-final-local.log`. Rebuild the Android test APK so the fixture loaded by `RegistrationFlowTest` includes this exact policy.
 
-## October31 rollout checkpoint — approval required
+## October31 pre-approval checkpoint — historical
 
 The root task created `PublicProfiles(discoverable ASC, interestKeys ARRAY_CONTAINS)` in the existing project. The console reported creation complete at00:33:53 America/Chicago, and its table then showed all8 indexes Enabled. No earlier index was removed. The project continues to display Spark; billing and production documents were not changed.
 
 The complete rule text was copied back from the visible editor and exactly matched the10,984-byte tested file, SHA-256 `298b5b565ce300da32c0753bac087e004e7852030b089b4f54e2995460a97f8d`. The Publish action was rejected by automatic approval review: the prior explicit69-test approval did not cover this177-test interest-key and old-client compatibility policy. No CLI or indirect deployment was attempted. The editor still shows unpublished changes, with the prior published version starred at Yesterday •11:04PM. The canonical production snapshot recorded above remains the last verified published policy.
 
-All local work is ready:54 logic tests,177 authorization cases,15 full phone flows, four2-flow viewport runs and final compact/tablet save-feedback regressions pass. Both normal APK variants use `linkme-e0b8d` and disable emulators; the debug APK signature is verified. Until this exact candidate is approved and published, production2.1 profile saves containing `interestKeys` will fail.
+All local work is ready:54 logic tests,177 authorization cases,15 device tests covering the phone flows, four2-flow viewport runs and final compact/tablet save-feedback regressions pass. Both normal APK variants use `linkme-e0b8d` and disable emulators; the debug APK signature is verified. At that checkpoint, production2.1 profile saves containing `interestKeys` remained unavailable until publication.
 
-Approval covers allowing owner-saved custom interests (up to16) and validated lookup keys, plus denying2.0 replacement saves that omit keys on an already-upgraded profile. Existing data is retained, private profile/message access is unchanged, and Spark remains the free plan. Local proof images and machine-readable state are in ignored `artifacts/2.1/verification/`. After approval, publish only this hash, verify the new starred version and anonymous denials, and update this checkpoint.
+Approval covers allowing owner-saved custom interests (up to16) and validated lookup keys, plus denying2.0 replacement saves that omit keys on an already-upgraded profile. Existing data is retained, private profile/message access is unchanged, and Spark remains the free plan. Local proof images and machine-readable state are in ignored `artifacts/2.1/verification/`. The explicitly approved publication and final live verification are recorded next.
+
+## Final2.1 production verification — October31
+
+After the user explicitly approved the exact177-test rule file and its compatibility impact, the same console Publish action succeeded at **00:52 America/Chicago on October31,2026**. The console now stars Today •12:52AM and no longer shows unpublished changes. The entire published editor text was copied back through the visible UI and exactly matches the approved source:10,984 bytes, SHA-256 `298b5b565ce300da32c0753bac087e004e7852030b089b4f54e2995460a97f8d`.
+
+| Check | Final live result |
+| --- | --- |
+| Project | `linkme-e0b8d` |
+| Rule candidate | Exact approved177-test hash published |
+| Composite indexes | All8 Enabled, zero Building; seven previous indexes retained |
+| New interest-key index | `CICAgJiUsZIK`, Enabled |
+| Billing | Spark, No-cost ($0/month), unchanged |
+| Anonymous `_linkme_health_probe/status` | HTTP403 |
+| Anonymous `Users/_linkme_health_probe` | HTTP403 |
+| Anonymous `Messages/_linkme_health_probe` | HTTP403 |
+| Anonymous `PublicProfiles/_linkme_health_probe` | HTTP403 |
+| Production QA document/account writes | None |
+| Existing data | Preserved; no migration or deletion |
+
+The anonymous checks were single-document reads of nonexistent probe paths, without credentials or production data retrieval. The successful owner custom-save paths are covered by the177-case emulator suite and15-test device suite; no test profiles were inserted into production. The2.1 schema and index prerequisites are now live. Older2.0 clients must update to edit a profile already containing2.1 keys; this prevents silent replacement with the older schema.
+
+Proof images, anonymous response codes, exact package flags, signatures, hashes and the combined verification summary are preserved in ignored `artifacts/2.1/verification/`. The earlier automatic-review rejection was resolved by the user's explicit approval; no alternate deployment path was used.

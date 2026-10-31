@@ -2,7 +2,7 @@
 
 Native Android app for meeting people through shared interests and continuing in a private one-to-one conversation. Kotlin Views, Material 3, Firebase Authentication and Cloud Firestore.
 
-**Rollout status:** Local2.1 implementation, tests and APKs are complete. The new interest index is Enabled; publication of the exact tested Firestore policy awaits explicit approval. Until publication, production2.1 profile saves are rejected by the existing policy. See the security deployment checkpoint.
+**Rollout status:** The approved2.1 Firestore policy was published and verified October31,2026 at00:52 America/Chicago. All eight indexes are Enabled, existing data is retained and Spark remains $0/month. The local APKs and verification evidence are ready.
 
 ## What's included
 
@@ -61,13 +61,13 @@ The device suite temporarily changes the **local demo** rules for registration f
 
 The ignored `artifacts/2.1/` directory holds `LinkMe-2.1-debug.apk`, an unsigned optimized release APK, `SHA256SUMS.txt`, native screenshots and `verification/summary.json`. The installable normal APK connects to the existing production Firebase project and contains no seeded sample users. Preview screenshots are explicitly labeled sample data. Earlier2.0 artifacts are retained.
 
-Verification for this refactor covers54 unit tests,177 security cases and15 full phone flows. Additional capture workflows cover dark mode, font scale1.3, short landscape and tablet. See the current review for final build, signature, lint and rollout evidence.
+Verification for this refactor covers54 unit tests,177 security cases and15 device tests covering the phone flows. Additional capture workflows cover dark mode, font scale1.3, short landscape and tablet. See the current review for final build, signature, lint and rollout evidence.
 
 ## Backend and migration
 
 The existing Firebase project remains active on **Spark, $0/month**. No billing account, paid service, Cloud Storage, SMS auth or Functions was added. Free quotas still apply; exhausted quotas produce a recoverable error instead of an automatic billing upgrade.
 
-The approved restrictive policy was deployed October30,2026. The2.1 interest schema and additional key index have a separate rollout record in the security document. Existing data remains in place. Version1.0 clients must update because their unbounded/private-directory queries are denied; version2.0 clients must update to edit profiles already saved with2.1 interest keys.
+The approved restrictive policy was deployed October30,2026. The2.1 interest schema was explicitly approved, published and verified October31 at00:52; all eight indexes, including the new interest-key index, are Enabled. The security document records the exact deployed hash. Existing data remains in place. Version1.0 clients must update because their unbounded/private-directory queries are denied; version2.0 clients must update to edit profiles already saved with2.1 interest keys.
 
 `Users/{uid}` is private. Users explicitly publish only their safe name, introduction and interests to `PublicProfiles/{uid}` when saving their profile. There is no automatic public migration of old accounts. Historical private messages remain readable to their sender and recipient; a peer without a public profile appears as “LinkMe member.” New messages and their inbox summaries are written atomically and validated together.
 

@@ -1,12 +1,12 @@
-# LinkMe2.1 local implementation complete; rules publication pending
+# LinkMe2.1 complete and verified
 
 - Repository `/Users/arthurfu/Documents/linkme`, dedicated branch `codex/interest-discovery`, base `edc028e`.
 -148-topic/12-group catalog,16 customizable interests, explicit local introduction/scene suggestions, saved drafts and separate discovery filters implemented.
 - Independent code review: noP0–P2; shared-custom duplicate fixed. Independent native review: ship for scored fixes and reviewed interest surfaces. Short-height editor, exploration entry, design docs and rail save feedback corrected.
-- Final verification:54/54 unit,177/177 security,15/15 full phone flows; four viewport matrices2/2 each plus compact/tablet feedback1/1 each.
+- Final verification:54/54 unit,177/177 security,15/15 device tests covering the phone flows; four viewport matrices2/2 each plus compact/tablet feedback1/1 each.
 - Normal debug and optimized unsigned release builds pass; production project/emulator flags, version2.1/code3, debug signature and APK hashes verified. Lint0 errors/20 warnings.
 - New index `CICAgJiUsZIK` Enabled, all8 retained; Spark remains free. No production document writes or migration.
-- **Blocked final action:** Publish candidate10984-byte rules, hash298b5b565ce300da32c0753bac087e004e7852030b089b4f54e2995460a97f8d. Automatic approval review requires explicit approval because prior69-test authorization does not cover this177-test policy. No bypass attempted; production2.1 profile saves await that publication.
+- User explicitly approved the exact177-test policy. Published00:52 October31 America/Chicago; complete published text matches10984-byte hash298b5b565ce300da32c0753bac087e004e7852030b089b4f54e2995460a97f8d. All8 indexes Enabled, four anonymous probes403; Spark remains $0/month. Initial automatic-review rejection was resolved with explicit approval; no bypass.
 - Delivery: `artifacts/2.1/LinkMe-2.1-debug.apk`, unsigned release, SHA256SUMS, native captures and verification summary. Earlier2.0 deliverables preserved; no push/store publication.
 
 # Previous LinkMe2.0 verified state
