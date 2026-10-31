@@ -1,10 +1,13 @@
 package com.ams.linkme.data
 
+import com.ams.linkme.domain.InterestCatalog
 import com.ams.linkme.domain.Interests
 import com.ams.linkme.domain.LinkMeLogic
 import com.ams.linkme.model.Message
 import com.ams.linkme.model.StreamUpdate
 import com.ams.linkme.model.User
+import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.DocumentSnapshot
@@ -15,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.MetadataChanges
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.SetOptions
 import com.google.firebase.firestore.Source
 
@@ -99,7 +103,8 @@ class LinkMeRepository private constructor() {
                 "uid" to id,
                 "username" to user.username.trim(),
                 "bio" to user.bio.trim(),
-                "interests" to user.interests,
+                "interests" to InterestCatalog.normalize(user.interests),
+                "interestKeys" to InterestCatalog.indexKeys(user.interests),
                 "discoverable" to user.discoverable,
                 "updatedAt" to FieldValue.serverTimestamp(),
             )
@@ -117,15 +122,23 @@ class LinkMeRepository private constructor() {
     }
 
     fun discover(interests: List<String>, callback: (Result<List<User>>) -> Unit) {
-        val values = Interests.normalize(interests)
-        if (values.isEmpty()) return callback(Result.success(emptyList()))
-        db.collection("PublicProfiles")
-            .whereEqualTo("discoverable", true)
-            .whereArrayContainsAny("interests", values)
-            .limit(60)
-            .get(Source.SERVER)
-            .addOnSuccessListener { snapshot ->
-                val people = snapshot.documents.map { profile(it, it.id) }
+        val keys = InterestCatalog.indexKeys(interests)
+        if (keys.isEmpty()) return callback(Result.success(emptyList()))
+        val tasks = mutableListOf<Task<QuerySnapshot>>()
+        val visible = db.collection("PublicProfiles").whereEqualTo("discoverable", true)
+        tasks.add(visible.whereArrayContainsAny("interestKeys", keys).limit(60).get(Source.SERVER))
+        val legacy = InterestCatalog.legacyQueryValues(interests)
+        if (legacy.isNotEmpty())
+            tasks.add(
+                visible.whereArrayContainsAny("interests", legacy).limit(60).get(Source.SERVER)
+            )
+        Tasks.whenAllSuccess<QuerySnapshot>(tasks)
+            .addOnSuccessListener { snapshots ->
+                val people =
+                    snapshots
+                        .flatMap { it.documents }
+                        .distinctBy { it.id }
+                        .map { profile(it, it.id) }
                 people.forEach { publicProfiles[it.uid] = it }
                 callback(Result.success(people))
             }

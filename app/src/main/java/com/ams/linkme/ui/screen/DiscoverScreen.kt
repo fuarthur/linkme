@@ -1,7 +1,6 @@
 package com.ams.linkme.ui.screen
 
 import android.view.View
-import android.view.ViewGroup
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
@@ -17,78 +16,52 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 
 class DiscoverScreen(
-    private val activity: AppCompatActivity,
-    private val model: MainViewModel,
+    activity: AppCompatActivity,
+    model: MainViewModel,
     onChat: (User) -> Unit,
-    onProfile: () -> Unit,
+    onEditInterests: () -> Unit,
 ) {
     val view = activity.column()
 
     init {
-        val configuration = activity.resources.configuration
-        val compact = configuration.screenHeightDp / configuration.fontScale < 600
+        val compact =
+            activity.resources.configuration.let { it.screenHeightDp / it.fontScale < 600 }
         val padding = if (compact) 16 else 24
         val header = activity.column(padding)
         val top = activity.row()
-        top.addView(
-            activity.label("Discover", 30f, true),
-            LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f),
-        )
+        top.addView(activity.label("Discover", 30f, true), LinearLayout.LayoutParams(0, -2, 1f))
         top.addView(
             activity.button("Refresh", textOnly = true).apply {
-                layoutParams =
-                    LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                    )
+                layoutParams = LinearLayout.LayoutParams(-2, -2)
                 setOnClickListener { model.refresh() }
             }
         )
         header.addView(top)
-        header.addView(
-            activity
-                .label("Good conversations start with common ground.", 16f, secondary = true)
-                .apply {
-                    space(top = 8, bottom = 20)
-                    visibility = if (compact) View.GONE else View.VISIBLE
-                }
-        )
-        header.addView(
-            activity.label("Explore your interests", 14f, true).apply {
-                visibility = if (compact) View.GONE else View.VISIBLE
-            }
-        )
-        val filters =
+        if (!compact)
+            header.addView(
+                activity
+                    .label("Meet over something you actually love.", 16f, secondary = true)
+                    .apply { space(top = 8, bottom = 12) }
+            )
+        val mix =
             ChipGroup(activity).apply {
-                isSingleSelection = false
-                isSingleLine = compact
+                isSingleLine = true
                 chipSpacingHorizontal = activity.dp(8)
                 chipSpacingVertical = activity.dp(4)
             }
-        val chips =
-            Interests.all.associateWith { interest ->
-                Chip(activity).apply {
-                    text = Interests.label(interest)
-                    isCheckable = true
-                    minimumHeight = activity.dp(48)
-                    setEnsureMinTouchTargetSize(true)
-                    tag = interest
-                    filters.addView(this)
-                }
+        header.addView(
+            HorizontalScrollView(activity).apply {
+                isHorizontalScrollBarEnabled = false
+                addView(mix)
             }
-        if (compact) {
-            header.addView(
-                HorizontalScrollView(activity).apply {
-                    contentDescription = "Interest filters"
-                    isHorizontalScrollBarEnabled = false
-                    space(top = 8)
-                    addView(filters)
-                }
-            )
-        } else {
-            filters.space(top = 8)
-            header.addView(filters)
-        }
+        )
+        header.addView(
+            activity.button("Explore & filter interests", outlined = true).apply {
+                id = R.id.discover_interests
+                space(top = 8)
+                setOnClickListener { onEditInterests() }
+            }
+        )
         view.addView(header)
         val count =
             activity.label("", 13f, secondary = true).apply {
@@ -98,69 +71,72 @@ class DiscoverScreen(
         val progress = activity.spinner()
         view.addView(progress)
         val empty = activity.column(28)
-        val emptyTitle = activity.label("", 24f, true)
-        empty.addView(emptyTitle)
-        val emptyBody = activity.label("", 16f, secondary = true).apply { space(top = 12) }
-        empty.addView(emptyBody)
-        val action =
-            activity.button("Edit my interests", outlined = true).apply {
+        val title = activity.label("", 24f, true)
+        empty.addView(title)
+        val body = activity.label("", 16f, secondary = true).apply { space(top = 12) }
+        empty.addView(body)
+        val find =
+            activity.button("Find my interests", outlined = true).apply {
                 space(top = 24)
-                setOnClickListener { onProfile() }
+                setOnClickListener { onEditInterests() }
             }
-        empty.addView(action)
+        empty.addView(find)
         val retry =
             activity.button("Try again", outlined = true).apply {
-                setOnClickListener { model.refresh() }
                 space(top = 8)
+                setOnClickListener { model.refresh() }
             }
         empty.addView(retry)
-        view.addView(
-            activity.scrollContent(empty),
-            LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f),
-        )
+        val emptyScroll = activity.scrollContent(empty)
+        view.addView(emptyScroll, LinearLayout.LayoutParams(-1, 0, 1f))
+        val adapter = PeopleAdapter(onChat)
         val list =
             RecyclerView(activity).apply {
                 id = R.id.people_list
                 layoutManager = LinearLayoutManager(activity)
+                this.adapter = adapter
                 clipToPadding = false
                 setPadding(0, 0, 0, activity.dp(20))
             }
-        val adapter = PeopleAdapter(onChat)
-        list.adapter = adapter
-        view.addView(list, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f))
-        var syncing = false
-        chips.forEach { (interest, chip) ->
-            chip.setOnCheckedChangeListener { _, _ ->
-                if (!syncing) model.select(chips.filterValues { it.isChecked }.keys.toList())
-            }
-        }
+        view.addView(list, LinearLayout.LayoutParams(-1, 0, 1f))
+        var displayed: List<String>? = null
         model.state.observe(activity) { state ->
-            syncing = true
-            chips.forEach { (interest, chip) -> chip.isChecked = interest in state.selected }
-            syncing = false
+            if (displayed != state.selected) {
+                displayed = state.selected
+                mix.removeAllViews()
+                state.selected.forEach { tag ->
+                    mix.addView(
+                        Chip(activity).apply {
+                            text = Interests.label(tag)
+                            minimumHeight = activity.dp(48)
+                            setEnsureMinTouchTargetSize(true)
+                            setOnClickListener { onEditInterests() }
+                        }
+                    )
+                }
+            }
             progress.visibility = if (state.loading) View.VISIBLE else View.GONE
-            val showEmpty = !state.loading && state.people.isEmpty()
-            (empty.parent as View).visibility = if (showEmpty) View.VISIBLE else View.GONE
+            val isEmpty = !state.loading && state.people.isEmpty()
+            emptyScroll.visibility = if (isEmpty) View.VISIBLE else View.GONE
             list.visibility =
                 if (!state.loading && state.people.isNotEmpty()) View.VISIBLE else View.GONE
             count.text =
                 if (state.people.isEmpty()) ""
-                else if (state.people.size == 1) "1 person with something in common"
-                else "${state.people.size} people with something in common"
-            emptyTitle.text =
+                else "${state.people.size} people with shared or related interests"
+            title.text =
                 when {
                     state.error != null -> "Could not load people"
                     state.selected.isEmpty() -> "Find your common ground"
-                    else -> "No matches here yet"
+                    else -> "No connections here yet"
                 }
-            emptyBody.text =
+            body.text =
                 state.error
                     ?: if (state.selected.isEmpty())
-                        "Choose one or more interests above, or complete your profile to get started."
+                        "Explore a few ideas or create your own topics. You choose what becomes part of your mix."
                     else
-                        "Try a different interest or come back later. Your next conversation can start here."
-            action.visibility = if (state.error == null) View.VISIBLE else View.GONE
+                        "Try a broader topic or another combination. New people appear when they publish their profiles."
             retry.visibility = if (state.error != null) View.VISIBLE else View.GONE
+            find.visibility = if (state.error == null) View.VISIBLE else View.GONE
             adapter.selected = state.selected
             adapter.submitList(state.people)
         }

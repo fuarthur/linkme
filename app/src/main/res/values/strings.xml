@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name" translatable="false">LinkMe</string>
     <string name="bio_hint">A favorite artist, a weekend ritual, something to talk about.</string>
+    <plurals name="interests_selected_count">
+        <item quantity="one">%1$d / %2$d selected</item>
+        <item quantity="other">%1$d / %2$d selected</item>
+    </plurals>
 </resources>

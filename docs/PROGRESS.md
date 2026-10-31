@@ -1,4 +1,15 @@
-# Final verified state
+# LinkMe2.1 local implementation complete; rules publication pending
+
+- Repository `/Users/arthurfu/Documents/linkme`, dedicated branch `codex/interest-discovery`, base `edc028e`.
+-148-topic/12-group catalog,16 customizable interests, explicit local introduction/scene suggestions, saved drafts and separate discovery filters implemented.
+- Independent code review: noP0–P2; shared-custom duplicate fixed. Independent native review: ship for scored fixes and reviewed interest surfaces. Short-height editor, exploration entry, design docs and rail save feedback corrected.
+- Final verification:54/54 unit,177/177 security,15/15 full phone flows; four viewport matrices2/2 each plus compact/tablet feedback1/1 each.
+- Normal debug and optimized unsigned release builds pass; production project/emulator flags, version2.1/code3, debug signature and APK hashes verified. Lint0 errors/20 warnings.
+- New index `CICAgJiUsZIK` Enabled, all8 retained; Spark remains free. No production document writes or migration.
+- **Blocked final action:** Publish candidate10984-byte rules, hash298b5b565ce300da32c0753bac087e004e7852030b089b4f54e2995460a97f8d. Automatic approval review requires explicit approval because prior69-test authorization does not cover this177-test policy. No bypass attempted; production2.1 profile saves await that publication.
+- Delivery: `artifacts/2.1/LinkMe-2.1-debug.apk`, unsigned release, SHA256SUMS, native captures and verification summary. Earlier2.0 deliverables preserved; no push/store publication.
+
+# Previous LinkMe2.0 verified state
 
 - Local repository: `/Users/arthurfu/Documents/linkme`, branch `codex/linkme-v2`; baseline `ce640c9`.
 - Native LinkMe2.0 implemented and independently reviewed. Compact landscape discovery regression repaired; phone, dark, font1.3 and tablet captures reviewed.

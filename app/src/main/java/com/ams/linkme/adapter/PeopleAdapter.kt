@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.ams.linkme.R
+import com.ams.linkme.domain.InterestCatalog
 import com.ams.linkme.domain.Interests
 import com.ams.linkme.model.User
 import com.ams.linkme.ui.*
@@ -51,10 +52,13 @@ class PeopleAdapter(private val onChat: (User) -> Unit) :
         top.addView(c.avatar(user.username))
         val identity = c.column()
         identity.addView(c.label(user.username, 20f, true))
-        val common = user.interests.filter { it in selected }
+        val match = InterestCatalog.match(selected, user.interests)
+        val common = match.exact
         identity.addView(
             c.label(
-                if (common.size == 1) "1 shared interest" else "${common.size} shared interests",
+                if (common.isEmpty()) "A related interest"
+                else if (common.size == 1) "1 shared interest"
+                else "${common.size} shared interests",
                 13f,
                 secondary = true,
             )
@@ -76,7 +80,9 @@ class PeopleAdapter(private val onChat: (User) -> Unit) :
             )
         body.addView(
             c.label(
-                    "You both enjoy ${common.joinToString(" · ", transform=Interests::label)}",
+                    if (common.isNotEmpty())
+                        "You both enjoy ${common.take(3).joinToString(" · ",transform=Interests::label)}${if(common.size>3) " +${common.size-3} more" else ""}"
+                    else "Connected through ${match.relatedGroups.take(3).joinToString(" · ")}",
                     14f,
                     true,
                 )
@@ -85,11 +91,12 @@ class PeopleAdapter(private val onChat: (User) -> Unit) :
                     space(top = 16)
                 }
         )
-        val other = user.interests.filterNot { it in common }
+        val other =
+            user.interests.filter { InterestCatalog.match(listOf(it), common).exact.isEmpty() }
         if (other.isNotEmpty())
             body.addView(
                 c.label(
-                        "Also into ${other.joinToString(" · ", transform=Interests::label)}",
+                        "Also into ${other.take(3).joinToString(" · ",transform=Interests::label)}${if(other.size>3) " +${other.size-3} more" else ""}",
                         13f,
                         secondary = true,
                     )

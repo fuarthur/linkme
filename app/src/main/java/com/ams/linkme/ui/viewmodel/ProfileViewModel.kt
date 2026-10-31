@@ -22,6 +22,7 @@ class ProfileViewModel : ViewModel() {
     var bio = ""
     val interests = linkedSetOf<String>()
     var discoverable = true
+    private var interestsEdited = false
     var draftLoaded = false
     val email: String
         get() = repo.auth.currentUser?.email.orEmpty()
@@ -35,7 +36,7 @@ class ProfileViewModel : ViewModel() {
                     if (!draftLoaded) {
                         name = user.username
                         bio = user.bio
-                        interests.addAll(user.interests)
+                        if (!interestsEdited) interests.addAll(user.interests)
                         discoverable = if (user.username.isBlank()) true else user.discoverable
                         draftLoaded = true
                     }
@@ -44,6 +45,13 @@ class ProfileViewModel : ViewModel() {
                 { state.value = ProfileState(loading = false, error = it.userMessage()) },
             )
         }
+    }
+
+    fun setInterests(values: List<String>) {
+        interestsEdited = true
+        interests.clear()
+        interests.addAll(com.ams.linkme.domain.InterestCatalog.normalize(values))
+        state.value = state.value!!.copy(error = null)
     }
 
     fun save() {

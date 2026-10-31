@@ -5,33 +5,13 @@ import com.ams.linkme.model.User
 import java.security.MessageDigest
 import java.util.Locale
 
+/** Compatibility facade for existing profile and chat callers. */
 object Interests {
-    val all = listOf("Sport", "Food", "Dating", "Games", "Music", "Anime", "Movie", "Other")
+    val all: List<String> = InterestCatalog.topics.map { it.label }
 
-    fun normalize(values: Collection<String>): List<String> =
-        values
-            .mapNotNull { raw ->
-                val normalized =
-                    when (raw.trim().lowercase(Locale.ROOT)) {
-                        "sports",
-                        "sport" -> "Sport"
-                        "movies",
-                        "movie",
-                        "film",
-                        "films" -> "Movie"
-                        else -> all.firstOrNull { it.equals(raw.trim(), ignoreCase = true) }
-                    }
-                normalized
-            }
-            .distinct()
-            .take(8)
+    fun normalize(values: Collection<String>): List<String> = InterestCatalog.normalize(values)
 
-    fun label(value: String): String =
-        when (value) {
-            "Sport" -> "Sports"
-            "Movie" -> "Movies"
-            else -> value
-        }
+    fun label(value: String): String = InterestCatalog.label(value)
 }
 
 object LinkMeLogic {
@@ -51,25 +31,26 @@ object LinkMeLogic {
         interests: List<String>,
         blocked: Set<String> = emptySet(),
     ): List<User> {
-        val selected = Interests.normalize(interests).toSet()
+        val selected = InterestCatalog.normalize(interests)
+        if (selected.isEmpty()) return emptyList()
         return users
+            .asSequence()
             .filter { user ->
-                !user.uid.isNullOrBlank() &&
+                user.uid.isNotBlank() &&
                     user.uid != currentUid &&
                     user.uid !in blocked &&
-                    !user.username.isNullOrBlank() &&
-                    Interests.normalize(user.interests.orEmpty()).any { it in selected }
+                    user.username.isNotBlank()
             }
-            .distinctBy { it.uid }
+            .map { it to InterestCatalog.match(selected, it.interests) }
+            .filter { it.second.score > 0 }
+            .distinctBy { it.first.uid }
             .sortedWith(
-                compareByDescending<User> {
-                        Interests.normalize(it.interests.orEmpty()).count { interest ->
-                            interest in selected
-                        }
-                    }
-                    .thenBy { it.username.orEmpty().lowercase(Locale.ROOT) }
-                    .thenBy { it.uid }
+                compareByDescending<Pair<User, InterestMatch>> { it.second.score }
+                    .thenBy { it.first.username.lowercase(Locale.ROOT) }
+                    .thenBy { it.first.uid }
             )
+            .map { it.first }
+            .toList()
     }
 
     fun validateProfile(name: String, bio: String, interests: List<String>): String? =
@@ -78,9 +59,11 @@ object LinkMeLogic {
             name.trim().length > 40 -> "Keep your name to 40 characters."
             bio.trim().length > 240 -> "Keep your introduction to 240 characters."
             interests.isEmpty() -> "Choose at least one interest."
-            interests.size > 8 ||
-                interests.distinct().size != interests.size ||
-                interests.any { it !in Interests.all } -> "Choose interests from the list."
+            interests.size > InterestCatalog.MAX_INTERESTS -> "Choose up to 16 interests."
+            interests.any { InterestCatalog.validateLabel(it) != null } ->
+                "Use an interest name with 1–40 characters and no control characters."
+            InterestCatalog.normalize(interests).size != interests.size ->
+                "Choose each interest only once."
             else -> null
         }
 

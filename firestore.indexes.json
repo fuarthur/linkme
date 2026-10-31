@@ -15,6 +15,20 @@
       ]
     },
     {
+      "collectionGroup": "PublicProfiles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "discoverable",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "interestKeys",
+          "arrayConfig": "CONTAINS"
+        }
+      ]
+    },
+    {
       "collectionGroup": "Messages",
       "queryScope": "COLLECTION",
       "fields": [

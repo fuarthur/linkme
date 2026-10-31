@@ -1,16 +1,20 @@
-# LinkMe 2.0
+# LinkMe 2.1
 
 Native Android app for meeting people through shared interests and continuing in a private one-to-one conversation. Kotlin Views, Material 3, Firebase Authentication and Cloud Firestore.
 
+**Rollout status:** Local2.1 implementation, tests and APKs are complete. The new interest index is Enabled; publication of the exact tested Firestore policy awaits explicit approval. Until publication, production2.1 profile saves are rejected by the existing policy. See the security deployment checkpoint.
+
 ## What's included
 
-- Multiple-interest discovery with explicit common-interest counts, introductions and conversation starters.
+- A searchable148-topic catalog in12 groups, custom interests, removable16-topic mixes and selected English/Chinese search aliases.
+- Explicit suggestions from an introduction and three optional scene questions; each suggestion explains its source and requires selection.
+- Discovery separates exact shared topics from related categories, with introductions and evidence-based conversation starters. Profile interests and discovery filters are edited separately.
 - Real-time text chat, named inbox, server timestamps, bounded history pagination and recovery of older legacy conversations.
 - Profile editing with acknowledged saves, an optional public Discover profile, private contact details and block/unblock controls.
 - Email/password registration, sign-in, password recovery and sign-out.
 - Light/dark themes, large-text layouts, phone bottom navigation and a navigation rail on windows at least 600dp wide.
 
-Discovery is a bounded sample of up to 60 eligible profiles, ranked by shared interests within that sample. It is not a global recommendation or compatibility score. Existing interests remain the eight original categories; old Sport/Sports and Movie/Movies values are normalized.
+Discovery merges two bounded server queries (up to60 new-key profiles plus60 legacy-label profiles), deduplicates people, ranks actual label overlap and shows at most60. It is not exhaustive global ranking or a compatibility score. Old tags remain supported; aliases normalize to stable identities. Custom labels retain their wording and match across case, Unicode normalization and whitespace. Suggestions run locally without remote AI or chat/contact profiling.
 
 ## Build
 
@@ -55,16 +59,16 @@ The device suite temporarily changes the **local demo** rules for registration f
 
 ## Verified local delivery
 
-The `artifacts/` directory is ignored by Git and contains the installable `LinkMe-2.0-debug.apk`, an unsigned optimized release APK, `SHA256SUMS.txt`, native screenshots and `verification/summary.json`. The delivered normal APK connects to the existing production Firebase project; it contains no seeded sample users. Local preview screenshots are explicitly labeled sample data.
+The ignored `artifacts/2.1/` directory holds `LinkMe-2.1-debug.apk`, an unsigned optimized release APK, `SHA256SUMS.txt`, native screenshots and `verification/summary.json`. The installable normal APK connects to the existing production Firebase project and contains no seeded sample users. Preview screenshots are explicitly labeled sample data. Earlier2.0 artifacts are retained.
 
-Verified:27 unit tests,79 security cases and11 device flows pass. Android lint has no errors and20 warnings, documented in the review. Debug signing and both variants' production project/emulator flags were checked.
+Verification for this refactor covers54 unit tests,177 security cases and15 full phone flows. Additional capture workflows cover dark mode, font scale1.3, short landscape and tablet. See the current review for final build, signature, lint and rollout evidence.
 
 ## Backend and migration
 
 The existing Firebase project remains active on **Spark, $0/month**. No billing account, paid service, Cloud Storage, SMS auth or Functions was added. Free quotas still apply; exhausted quotas produce a recoverable error instead of an automatic billing upgrade.
 
-The approved restrictive rules and five additional indexes were deployed October 30, 2026; all seven indexes, including the two original indexes, are enabled. Existing data remains in place. Version 1.0 clients must update because their unbounded/private-directory queries are now denied.
+The approved restrictive policy was deployed October30,2026. The2.1 interest schema and additional key index have a separate rollout record in the security document. Existing data remains in place. Version1.0 clients must update because their unbounded/private-directory queries are denied; version2.0 clients must update to edit profiles already saved with2.1 interest keys.
 
 `Users/{uid}` is private. Users explicitly publish only their safe name, introduction and interests to `PublicProfiles/{uid}` when saving their profile. There is no automatic public migration of old accounts. Historical private messages remain readable to their sender and recipient; a peer without a public profile appears as “LinkMe member.” New messages and their inbox summaries are written atomically and validated together.
 
-See [security and deployment details](docs/firebase-security.md), [review and verification](docs/code-review-2026-10-30.md), [product scope](PRODUCT.md) and [design system](DESIGN.md).
+See [security and deployment details](docs/firebase-security.md), [interest refactor review and verification](docs/interest-redesign-review-2026-10-31.md), [product scope](PRODUCT.md) and [design system](DESIGN.md).

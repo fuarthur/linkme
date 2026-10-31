@@ -11,7 +11,7 @@ import {
   signInWithEmailAndPassword, signOut,
 } from 'firebase/auth';
 import {
-  Timestamp, and, collection, connectFirestoreEmulator, deleteDoc,
+  Timestamp, and, collection, connectFirestoreEmulator, deleteDoc, deleteField,
   doc, documentId, getDoc, getDocs, getFirestore, limit, or, orderBy,
   query, serverTimestamp, setDoc, updateDoc, where, writeBatch,
 } from 'firebase/firestore';
@@ -163,7 +163,7 @@ for (const [name, overrides] of [
   ['oversized bio', { bio: 'x'.repeat(241) }],
   ['empty interests', { interests: [] }],
   ['duplicate interests', { interests: ['Music', 'Music'] }],
-  ['unknown interest', { interests: ['Cryptocurrency'] }],
+  ['seventeen interests', { interests: Array.from({ length: 17 }, (_, i) => `Topic ${i + 1}`) }],
   ['non-list interests', { interests: 'Music' }],
   ['invalid visibility type', { discoverable: 'true' }],
   ['spoofed publication timestamp', { updatedAt: oldTime }],
@@ -175,6 +175,225 @@ for (const [name, overrides] of [
     })));
   });
 }
+
+// New interest cases must reject the old fixed-eight policy before widening it.
+// Index keys are untrusted candidate hints; label overlap remains an app concern.
+test('custom interests outside the old catalog are preserved without requiring index keys', async () => {
+  const db = dbAs('alice');
+  await assertSucceeds(setDoc(doc(db, 'PublicProfiles', 'alice'), publicProfile('alice', {
+    interests: ['Cryptocurrency', 'Indie games', 'Astrophotography', '手作り模型'],
+    updatedAt: serverTimestamp(),
+  })));
+  const saved = await getDoc(doc(db, 'PublicProfiles', 'alice'));
+  assert.deepEqual(saved.data().interests, ['Cryptocurrency', 'Indie games', 'Astrophotography', '手作り模型']);
+  assert.equal('interestKeys' in saved.data(), false);
+});
+
+test('owner can atomically publish a new custom profile and merge private contact fields', async () => {
+  const db = dbAs('erin');
+  await setDoc(doc(db, 'Users', 'erin'), { uid: 'erin', email: 'erin@example.test', phone: '+15555550124' });
+  const profile = publicProfile('erin', {
+    interests: ['Indie games', 'Cooking', 'My tiny garden'],
+    interestKeys: ['t:indie-games', 'g:games', 't:cooking', 'g:food', `c:${'a'.repeat(64)}`],
+    updatedAt: serverTimestamp(),
+  });
+  const batch = writeBatch(db);
+  batch.set(doc(db, 'Users', 'erin'), profile, { merge: true });
+  batch.set(doc(db, 'PublicProfiles', 'erin'), profile);
+  await assertSucceeds(batch.commit());
+  const privateSaved = (await getDoc(doc(db, 'Users', 'erin'))).data();
+  const publicSaved = (await getDoc(doc(dbAs('alice'), 'PublicProfiles', 'erin'))).data();
+  assert.equal(privateSaved.email, 'erin@example.test');
+  assert.equal(privateSaved.phone, '+15555550124');
+  assert.deepEqual(privateSaved.interests, ['Indie games', 'Cooking', 'My tiny garden']);
+  assert.deepEqual(privateSaved.interestKeys, publicSaved.interestKeys);
+  assert.deepEqual(Object.keys(publicSaved).sort(),
+    ['uid', 'username', 'bio', 'interests', 'interestKeys', 'discoverable', 'updatedAt'].sort());
+});
+
+test('profile creation, replacement and atomic save accept 16 labels of up to 40 UTF-16 units and 30 keys of up to 72 units', async () => {
+  const db = dbAs('alice');
+  const interests = ['x'.repeat(40), '😀'.repeat(20),
+    ...Array.from({ length: 14 }, (_, i) => `Custom topic ${i + 1}`)];
+  const interestKeys = [`t:${'x'.repeat(70)}`, `c:${'b'.repeat(64)}`,
+    ...Array.from({ length: 28 }, (_, i) => `g:hint-${i + 1}`)];
+  await assertSucceeds(setDoc(doc(db, 'PublicProfiles', 'alice'), publicProfile('alice', {
+    interests, interestKeys, updatedAt: serverTimestamp(),
+  })));
+  const saved = (await getDoc(doc(db, 'PublicProfiles', 'alice'))).data();
+  assert.deepEqual(saved.interests, interests);
+  assert.deepEqual(saved.interestKeys, interestKeys);
+  const newDb = dbAs('max-size-new-owner');
+  await assertSucceeds(setDoc(doc(newDb, 'PublicProfiles', 'max-size-new-owner'), publicProfile('max-size-new-owner', {
+    interests, interestKeys, updatedAt: serverTimestamp(),
+  })));
+  // The repository's real save path must also fit the per-request rules budget.
+  const profile = publicProfile('alice', { interests, interestKeys, updatedAt: serverTimestamp() });
+  const batch = writeBatch(db);
+  batch.set(doc(db, 'Users', 'alice'), profile, { merge: true });
+  batch.set(doc(db, 'PublicProfiles', 'alice'), profile);
+  await assertSucceeds(batch.commit());
+  const privateSaved = (await getDoc(doc(db, 'Users', 'alice'))).data();
+  const publicSaved = (await getDoc(doc(db, 'PublicProfiles', 'alice'))).data();
+  assert.equal(privateSaved.email, 'alice@example.test');
+  assert.equal(privateSaved.phone, '+15555550123');
+  assert.deepEqual(privateSaved.interests, interests);
+  assert.deepEqual(privateSaved.interestKeys, interestKeys);
+  assert.deepEqual(publicSaved.interestKeys, interestKeys);
+  assert.equal(privateSaved.updatedAt.isEqual(publicSaved.updatedAt), true);
+});
+
+test('public profile accepts a one-unit label and shortest canonical slug hint independently', async () => {
+  await assertSucceeds(setDoc(doc(dbAs('alice'), 'PublicProfiles', 'alice'), publicProfile('alice', {
+    interests: ['A'], interestKeys: ['g:a'], updatedAt: serverTimestamp(),
+  })));
+});
+
+for (const [name, value] of [
+  ['empty label', ''],
+  ['ASCII blank label', '   '],
+  ['Unicode blank label', '\u00a0\u2003\u3000'],
+  ['zero-width-only label', '\u200b\u200c\u200d\ufeff'],
+  ['41-unit label', 'x'.repeat(41)],
+  ['42-unit astral label', '😀'.repeat(21)],
+  ['line break', 'Live\nmusic'],
+  ['tab control', 'Live\tmusic'],
+  ['NUL control', 'Live\u0000music'],
+  ['DEL control', 'Live\u007fmusic'],
+  ['C1 control', 'Live\u0085music'],
+  ['non-string map', { label: 'Music' }],
+  ['non-string boolean', true],
+  ['null label', null],
+]) {
+  test(`custom interest schema rejects ${name} in the last label slot`, async () => {
+    await assertFails(setDoc(doc(dbAs('alice'), 'PublicProfiles', 'alice'), publicProfile('alice', {
+      interests: [...Array.from({ length: 15 }, (_, i) => `Topic ${i + 1}`), value],
+      updatedAt: serverTimestamp(),
+    })));
+  });
+}
+
+for (let slot = 0; slot < 16; slot++) {
+  test(`custom interest schema validates string type in label slot ${slot + 1}`, async () => {
+    const interests = Array.from({ length: 16 }, (_, i) => `Topic ${i + 1}`);
+    interests[slot] = 7;
+    await assertFails(setDoc(doc(dbAs('alice'), 'PublicProfiles', 'alice'), publicProfile('alice', {
+      interests, updatedAt: serverTimestamp(),
+    })));
+  });
+}
+
+for (const [name, value] of [
+  ['empty keys', []],
+  ['31 keys', Array.from({ length: 31 }, (_, i) => `g:hint-${i + 1}`)],
+  ['duplicate keys', ['g:music', 'g:music']],
+  ['non-list keys', 'g:music'],
+  ['null keys', null],
+  ['empty key', ['']],
+  ['73-unit key', [`t:${'k'.repeat(71)}`]],
+  ['arbitrary unprefixed key', ['x']],
+  ['unrecognized key prefix', ['p:music']],
+  ['empty topic slug', ['t:']],
+  ['uppercase slug', ['g:Music']],
+  ['leading slug hyphen', ['t:-music']],
+  ['trailing slug hyphen', ['g:music-']],
+  ['non-ASCII slug', ['t:😀']],
+  ['short custom hash', [`c:${'a'.repeat(63)}`]],
+  ['long custom hash', [`c:${'a'.repeat(65)}`]],
+  ['uppercase custom hash', [`c:${'A'.repeat(64)}`]],
+  ['non-hex custom hash', [`c:${'z'.repeat(64)}`]],
+  ['control character key', ['g:mu\nsic']],
+  ['separator injection inside a key', ['g:music|g:games']],
+  ['non-string map key', [{ id: 'g:music' }]],
+  ['non-string boolean key', [true]],
+  ['null key', [null]],
+]) {
+  test(`interest key schema rejects ${name}`, async () => {
+    await assertFails(setDoc(doc(dbAs('alice'), 'PublicProfiles', 'alice'), publicProfile('alice', {
+      interestKeys: value, updatedAt: serverTimestamp(),
+    })));
+  });
+}
+
+for (let slot = 0; slot < 30; slot++) {
+  test(`interest key schema validates string type in key slot ${slot + 1}`, async () => {
+    const interestKeys = Array.from({ length: 30 }, (_, i) => `g:hint-${i + 1}`);
+    interestKeys[slot] = 7;
+    await assertFails(setDoc(doc(dbAs('alice'), 'PublicProfiles', 'alice'), publicProfile('alice', {
+      interestKeys, updatedAt: serverTimestamp(),
+    })));
+  });
+}
+
+test('new schema still rejects public contact leakage and cross-owner publication', async () => {
+  const profile = publicProfile('alice', { interestKeys: ['g:music'], updatedAt: serverTimestamp() });
+  await assertFails(setDoc(doc(dbAs('alice'), 'PublicProfiles', 'alice'), { ...profile, email: 'alice@example.test' }));
+  await assertFails(setDoc(doc(dbAs('bob'), 'PublicProfiles', 'alice'), profile));
+});
+
+test('a new-schema owner may edit labels and keys together', async () => {
+  await env.withSecurityRulesDisabled((context) => setDoc(
+    doc(context.firestore(), 'PublicProfiles', 'alice'), publicProfile('alice', {
+      interests: ['Indie games'], interestKeys: ['t:indie-games', 'g:games'],
+    })));
+  const db = dbAs('alice');
+  await assertSucceeds(updateDoc(doc(db, 'PublicProfiles', 'alice'), {
+    interests: ['Cooking'], interestKeys: ['t:cooking', 'g:food'], updatedAt: serverTimestamp(),
+  }));
+  const saved = (await getDoc(doc(db, 'PublicProfiles', 'alice'))).data();
+  assert.deepEqual(saved.interests, ['Cooking']);
+  assert.deepEqual(saved.interestKeys, ['t:cooking', 'g:food']);
+});
+
+test('new-schema partial edits retain existing keys', async () => {
+  await env.withSecurityRulesDisabled((context) => setDoc(
+    doc(context.firestore(), 'PublicProfiles', 'alice'), publicProfile('alice', {
+      interests: ['Astrophotography'], interestKeys: ['t:astrophotography', 'g:tech'],
+    })));
+  const db = dbAs('alice');
+  await assertSucceeds(updateDoc(doc(db, 'PublicProfiles', 'alice'), { bio: 'A new intro', updatedAt: serverTimestamp() }));
+  assert.deepEqual((await getDoc(doc(db, 'PublicProfiles', 'alice'))).data().interestKeys,
+    ['t:astrophotography', 'g:tech']);
+});
+
+test('new-schema explicit key deletion is denied even when the labels fit the legacy catalog', async () => {
+  await env.withSecurityRulesDisabled((context) => setDoc(
+    doc(context.firestore(), 'PublicProfiles', 'alice'), publicProfile('alice', { interestKeys: ['g:music'] })));
+  await assertFails(updateDoc(doc(dbAs('alice'), 'PublicProfiles', 'alice'), {
+    interestKeys: deleteField(), updatedAt: serverTimestamp(),
+  }));
+});
+
+test('an old-client replacement cannot erase index keys or custom interests', async () => {
+  await env.withSecurityRulesDisabled((context) => setDoc(
+    doc(context.firestore(), 'PublicProfiles', 'alice'), publicProfile('alice', {
+      interests: ['Astrophotography'], interestKeys: ['t:astrophotography', 'g:tech'],
+    })));
+  const db = dbAs('alice');
+  await assertFails(setDoc(doc(db, 'PublicProfiles', 'alice'), publicProfile('alice', {
+    interests: ['Other'], updatedAt: serverTimestamp(),
+  })));
+  const saved = (await getDoc(doc(db, 'PublicProfiles', 'alice'))).data();
+  assert.deepEqual(saved.interests, ['Astrophotography']);
+  assert.deepEqual(saved.interestKeys, ['t:astrophotography', 'g:tech']);
+});
+
+test('a denied old-client downgrade leaves the private and public profile batch unchanged', async () => {
+  await env.withSecurityRulesDisabled((context) => setDoc(
+    doc(context.firestore(), 'PublicProfiles', 'alice'), publicProfile('alice', {
+      interests: ['Astrophotography'], interestKeys: ['t:astrophotography', 'g:tech'],
+    })));
+  const db = dbAs('alice');
+  const beforePrivate = (await getDoc(doc(db, 'Users', 'alice'))).data();
+  const beforePublic = (await getDoc(doc(db, 'PublicProfiles', 'alice'))).data();
+  const batch = writeBatch(db);
+  const oldClientProfile = publicProfile('alice', { interests: ['Other'], updatedAt: serverTimestamp() });
+  batch.set(doc(db, 'Users', 'alice'), { ...oldClientProfile, username: 'Would overwrite private' }, { merge: true });
+  batch.set(doc(db, 'PublicProfiles', 'alice'), oldClientProfile);
+  await assertFails(batch.commit());
+  assert.deepEqual((await getDoc(doc(db, 'Users', 'alice'))).data(), beforePrivate);
+  assert.deepEqual((await getDoc(doc(db, 'PublicProfiles', 'alice'))).data(), beforePublic);
+});
 
 test('public schema rejects a missing required field', async () => {
   const profile = publicProfile('alice', { updatedAt: serverTimestamp() });
@@ -220,6 +439,52 @@ for (const queryLimit of [null, 61]) {
     await assertFails(getDocs(query(collection(db, 'PublicProfiles'), ...filters)));
   });
 }
+
+test('discovery accepts a bounded 30-key query and excludes hidden and legacy profiles', async () => {
+  await env.withSecurityRulesDisabled(async (context) => {
+    const db = context.firestore();
+    await Promise.all([
+      updateDoc(doc(db, 'PublicProfiles', 'bob'), {
+        interests: ['Indie games'], interestKeys: ['t:indie-games', 'g:games'],
+      }),
+      updateDoc(doc(db, 'PublicProfiles', 'carol'), {
+        interests: ['Hidden topic'], interestKeys: ['t:indie-games'], discoverable: false,
+      }),
+    ]);
+  });
+  const db = dbAs('alice');
+  const keys = ['t:indie-games', ...Array.from({ length: 29 }, (_, i) => `g:not-present-${i}`)];
+  const result = await assertSucceeds(getDocs(query(collection(db, 'PublicProfiles'),
+    where('discoverable', '==', true), where('interestKeys', 'array-contains-any', keys), limit(60))));
+  assert.deepEqual(result.docs.map((snapshot) => snapshot.id), ['bob']);
+  assert.deepEqual(result.docs[0].data().interests, ['Indie games']);
+  assert.equal('email' in result.docs[0].data(), false);
+  assert.equal('phone' in result.docs[0].data(), false);
+  const legacy = await assertSucceeds(getDocs(query(collection(db, 'PublicProfiles'),
+    where('discoverable', '==', true), where('interests', 'array-contains-any', ['Music']), limit(60))));
+  assert.deepEqual(legacy.docs.map((snapshot) => snapshot.id).sort(), ['alice', 'dan']);
+});
+
+test('a new interest-key query cannot include hidden profiles', async () => {
+  const db = dbAs('alice');
+  await assertFails(getDocs(query(collection(db, 'PublicProfiles'),
+    where('interestKeys', 'array-contains-any', ['g:music']), limit(60))));
+});
+
+for (const queryLimit of [null, 61]) {
+  test(`interest-key discovery rejects ${queryLimit === null ? 'an unbounded' : 'an oversized'} list`, async () => {
+    const db = dbAs('alice');
+    const filters = [where('discoverable', '==', true), where('interestKeys', 'array-contains-any', ['g:music'])];
+    if (queryLimit !== null) filters.push(limit(queryLimit));
+    await assertFails(getDocs(query(collection(db, 'PublicProfiles'), ...filters)));
+  });
+}
+
+test('unauthenticated clients cannot run a visible bounded interest-key query', async () => {
+  const db = dbAs(null);
+  await assertFails(getDocs(query(collection(db, 'PublicProfiles'),
+    where('discoverable', '==', true), where('interestKeys', 'array-contains-any', ['g:music']), limit(60))));
+});
 
 test('a participant can atomically send a message and update the two-person summary', async () => {
   const db = dbAs('alice');

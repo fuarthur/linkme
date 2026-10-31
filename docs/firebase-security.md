@@ -1,10 +1,10 @@
 # Firebase security and deployment verification
 
-The canonical restrictive Firestore policy is deployed to the existing `linkme-e0b8d` project. The final production check on October 30, 2026 at 11:04 PM America/Chicago confirmed the published rule source, enabled indexes and Email/Password authentication, and denied anonymous probes. Firebase remains on Spark at $0. The implementation uses Authentication, Firestore, local test emulators and initial avatars, with no Cloud Functions or paid Storage dependency.
+The last recorded production check on October 30, 2026 at 11:04 PM America/Chicago verified the restrictive policy in the existing `linkme-e0b8d` project, seven enabled indexes, Email/Password authentication, denied anonymous probes, and Spark at $0. The October31 checkpoint below verifies the eighth interest-key index Enabled and the exact177-test candidate prepared in the editor. Publication was rejected by automatic approval review and awaits explicit approval; the new policy is not live. This work does not change billing or production data. The implementation uses Authentication, Firestore, local test emulators and initial avatars, with no Cloud Functions or paid Storage dependency.
 
 ## Verified production deployment
 
-The main task published and verified this final state at **2026-10-30 23:04 America/Chicago**:
+The main task published and verified this production snapshot at **2026-10-30 23:04 America/Chicago**:
 
 | Check | Verified result |
 | --- | --- |
@@ -32,7 +32,13 @@ The published policy includes canonical conversation identity and reciprocal fre
 
 Unmatched documents are denied. Private profile ownership does not grant access to another user’s private document or block list. Blocking prevents both directions of new message and summary writes; it retains participant access to existing history.
 
-Public profiles contain exactly `uid`, `username`, `bio`, `interests`, `discoverable`, and `updatedAt`. They cannot contain email, phone, gender, arbitrary roles, or additional fields. Names have 1–40 characters, bios 0–240, and interests are a unique list of 1–8 values from `Sport`, `Food`, `Dating`, `Games`, `Music`, `Anime`, `Movie`, and `Other`. Publication uses a server timestamp. Legacy accounts publish only after saving their own profile; there is no blanket copy from private `Users` documents.
+The candidate requires the six existing public fields: `uid`, `username`, `bio`, `interests`, `discoverable`, and `updatedAt`. The only optional field is `interestKeys`. Email, phone, gender, arbitrary roles, and every other additional field remain denied. Names have 1–40 UTF-16 code units and bios 0–240. Publication uses a server timestamp. Legacy accounts publish only after saving their own profile; there is no blanket copy from private `Users` documents.
+
+Interests are now 1–16 unique string labels, each 1–40 UTF-16 code units. Custom topics are accepted. Every possible element is checked; C0/C1 controls and labels made entirely of Unicode whitespace or format characters (including zero-width text) are denied. The app performs NFKC, Unicode whitespace, alias, and case normalization before publication; the rules independently enforce structural safety and exact-string uniqueness without attempting to reproduce the catalog.
+
+Optional `interestKeys` must contain 1–30 unique strings, with every element checked. Accepted keys are ASCII `t:<slug>` and `g:<slug>` (a 1–70-character lowercase alphanumeric/hyphen slug with alphanumeric endpoints), or `c:<64 lowercase hexadecimal characters>`. Thus every key is nonempty and at most 72 UTF-16 code units. Unicode custom labels remain supported through their ASCII SHA-256 keys. These values are candidate lookup hints; rules do not enforce an exact catalog mapping or label/hash relationship. Keys grant no authorization and cannot be trusted as evidence of overlap. The app derives match explanations from normalized labels.
+
+Legacy six-field public documents remain valid and can be read or updated by the same authorized actors. Once a document contains `interestKeys`, its resulting update document must retain valid keys. Old 2.0 replacement saves that omit them are denied; a private/public profile batch then fails atomically, retaining both previous documents. Partial edits that preserve existing keys remain possible. Private owner access, contact separation, visibility, message participants, linked summaries, and blocking are unchanged.
 
 New messages contain exactly `senderId`, `receiveId`, `content`, `timestamp`, `conversationId`, and `members`. Sender identity must match authentication, the recipient must be a different user with a public profile, the two member IDs must match those identities, and the message must contain at least one non-whitespace character with at most 2,000 characters. The Android client trims input. Message timestamps use `FieldValue.serverTimestamp()`.
 
@@ -46,19 +52,20 @@ Existing four-field legacy messages remain readable by their original sender/rec
 
 ## Query indexes
 
-`firestore.indexes.json` defines seven composite indexes: five new v2 indexes below plus the two original indexes retained for compatibility.
+`firestore.indexes.json` now defines eight composite indexes. The candidate adds only `PublicProfiles(discoverable ASC, interestKeys ARRAY_CONTAINS)` and retains all seven existing definitions.
 
-- Visible discovery: `discoverable ASC`, `interests ARRAY_CONTAINS`.
+- Interest-key discovery (new candidate): `discoverable ASC`, `interestKeys ARRAY_CONTAINS`.
+- Legacy visible discovery (retained): `discoverable ASC`, `interests ARRAY_CONTAINS`.
 - A conversation in both directions: `senderId ASC`, `receiveId ASC`, `timestamp DESC`.
 - Legacy sent inbox: `senderId ASC`, `timestamp DESC`.
 - Legacy received inbox: `receiveId ASC`, `timestamp DESC`.
 - Durable summaries: `members ARRAY_CONTAINS`, `updatedAt DESC`.
 
-Conversation and legacy inbox queries use descending `timestamp`, then descending document ID, and `limit(100)`. The final timestamp direction supplies the matching implicit `__name__ DESC` index ordering. Discovery uses `discoverable == true`, `interests array-contains-any ...`, and `limit(60)`. Chat-summary queries use `members array-contains currentUid`, descending `updatedAt`, and `limit(100)`.
+Conversation and legacy inbox queries use descending `timestamp`, then descending document ID, and `limit(100)`. The final timestamp direction supplies the matching implicit `__name__ DESC` index ordering. Discovery uses a visible `interestKeys array-contains-any ...` query and a separate visible legacy `interests array-contains-any ...` query, each with `discoverable == true` and `limit(60)`. Each filter contains at most 30 terms; empty filters short-circuit in the app. Results are merged by UID and ranked from actual label overlap, with at most 60 shown. This bounded search is not exhaustive global ranking. Chat-summary queries use `members array-contains currentUid`, descending `updatedAt`, and `limit(100)`.
 
 The retained definitions are `Messages(receiveId ASC, senderId ASC, timestamp ASC)` and `Users(interests ARRAY_CONTAINS, uid ASC)`.
 
-The Firestore emulator verifies security authorization for those query shapes but does not enforce production composite-index availability. The final live console check confirmed all seven production indexes Enabled, including the five versioned definitions above and two retained indexes.
+The Firestore emulator verifies security authorization for those query shapes but does not enforce production composite-index availability. The October31 live console check confirmed all eight indexes Enabled, including the retained seven and new `CICAgJiUsZIK` interest-key index. This does not imply the new policy is published; see the checkpoint below.
 
 ## Isolated emulator workflow
 
@@ -119,3 +126,30 @@ FIRESTORE_EMULATOR_HOST=127.0.0.1:8080 FIREBASE_AUTH_EMULATOR_HOST=127.0.0.1:909
 ```
 
 Result: **79 passed, 0 failed, 0 skipped**, exit code 0; 5,208 ms for the test process. The six new denial regressions are green, all 69 earlier tests pass, and four canonical-key compatibility tests pass. Red/green outputs are retained locally in ignored `firebase-tests/canonical-red.log` and `firebase-tests/canonical-green.log`. The strengthened 7,194-character policy was subsequently published and verified live at the time recorded in Verified production deployment; Spark billing remained unchanged. The preview seed now supplies `lastMessageId` and creates only correctly linked local demo batches.
+
+
+## Interest-discovery candidate verification (local only)
+
+The October 31, 2026 candidate has **10,984 ASCII characters/bytes**, SHA-256 **`298b5b565ce300da32c0753bac087e004e7852030b089b4f54e2995460a97f8d`**. The root policy and `app/src/androidTest/assets/firestore.rules` are byte-identical. The previously verified production snapshot above is historical; this security task did not deploy this candidate, create a production index, access production data, or change billing.
+
+Before changing the canonical 7,194-character policy (`e989f86356cc6a6fb068eee64328dbfc75a1a0bd4c024cd51c09176e829087c6`), the expanded suite ran **164 cases: 156 passed and 8 failed** for the intended gaps. Six accepted custom/key-bearing/maximum-size or partial-edit cases were denied by the old schema, while two old-client downgrade denial assertions failed because the writes incorrectly succeeded. The original 79 cases are retained apart from replacing the superseded unknown-interest denial with the 17-label bound; accepting that formerly unknown custom interest is now covered explicitly.
+
+An initial generic per-element validator exceeded Firestore's 1,000-expression limit at maximum size. The final flat validator uses one string-only ASCII pattern per key to enforce the approved prefix/length/type contract, including custom hash keys, and preserves Unicode display labels. The 13 malformed canonical-key cases were first observed incorrectly succeeding against the generic validator; that RED run completed **177 cases: 163 passed and 14 failed**, including the still-failing maximum-size write. `List.join` was investigated but rejected: the emulator demonstrated that it converts number, boolean and null elements into strings. It is not used to validate this schema.
+
+The final full verification completed **177 passed, 0 failed, 0 skipped**, exit code 0; the test process reported **11,601.767 ms**. The accepted boundary case executes all three real paths: a maximum-size replacement, a new document creation, and the Android-style atomic `Users` merge plus `PublicProfiles` set with 16 labels and 30 keys. It also verifies that contact fields survive and both batch timestamps agree. Coverage includes every one of the 16 interest and 30 key positions, 40-unit Unicode labels, 72-unit keys, malformed types/lengths/control characters/blank text, exact public allowlisting, partial edits, explicit key deletion, old-client replacement and whole-batch rollback, legacy profiles and discovery fallback, and visible/bounded/authenticated key queries. Existing private-access, identity, participant, fresh-summary, blocking and visibility policy segments were checked byte-for-byte against the canonical policy and are unchanged.
+
+The final local session then ran `seed-preview.mjs --reset` and an immediate normal rerun. Both seeded seven synthetic profiles and two conversations successfully. Readback verified all requested specific tags and stable keys, six visible profiles plus the hidden Indie games profile, the expected Indie games/Cooking/Astrophotography and broader music query results, hidden-profile denial and private-contact separation. Synthetic profile publication now merges private fields and writes the public document in one batch. All of this used only `demo-linkme` on the two loopback emulators; the CLI shut them down after verification.
+
+The index file was checked to contain exactly the seven previous definitions plus the single new `PublicProfiles(discoverable ASC, interestKeys ARRAY_CONTAINS)` definition, with unchanged field overrides. The emulator does not prove production index readiness. Rollout verification of that eighth index and the exact candidate hash remains a separate step.
+
+Reproduce the complete security suite with the existing `npm test` command documented above. Local ignored evidence is retained in `firebase-tests/interest-red.log`, `firebase-tests/interest-key-shape-red.log` and `firebase-tests/interest-final-local.log`. Rebuild the Android test APK so the fixture loaded by `RegistrationFlowTest` includes this exact policy.
+
+## October31 rollout checkpoint — approval required
+
+The root task created `PublicProfiles(discoverable ASC, interestKeys ARRAY_CONTAINS)` in the existing project. The console reported creation complete at00:33:53 America/Chicago, and its table then showed all8 indexes Enabled. No earlier index was removed. The project continues to display Spark; billing and production documents were not changed.
+
+The complete rule text was copied back from the visible editor and exactly matched the10,984-byte tested file, SHA-256 `298b5b565ce300da32c0753bac087e004e7852030b089b4f54e2995460a97f8d`. The Publish action was rejected by automatic approval review: the prior explicit69-test approval did not cover this177-test interest-key and old-client compatibility policy. No CLI or indirect deployment was attempted. The editor still shows unpublished changes, with the prior published version starred at Yesterday •11:04PM. The canonical production snapshot recorded above remains the last verified published policy.
+
+All local work is ready:54 logic tests,177 authorization cases,15 full phone flows, four2-flow viewport runs and final compact/tablet save-feedback regressions pass. Both normal APK variants use `linkme-e0b8d` and disable emulators; the debug APK signature is verified. Until this exact candidate is approved and published, production2.1 profile saves containing `interestKeys` will fail.
+
+Approval covers allowing owner-saved custom interests (up to16) and validated lookup keys, plus denying2.0 replacement saves that omit keys on an already-upgraded profile. Existing data is retained, private profile/message access is unchanged, and Spark remains the free plan. Local proof images and machine-readable state are in ignored `artifacts/2.1/verification/`. After approval, publish only this hash, verify the new starred version and anonymous denials, and update this checkpoint.

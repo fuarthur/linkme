@@ -19,13 +19,22 @@ class MainViewModel : ViewModel() {
     private val repo = LinkMeRepository.instance
     val state = MutableLiveData(DiscoveryState())
     private var generation = 0
+    private var manualFilters = false
 
     fun useProfile(user: User) {
-        if (state.value!!.selected.isEmpty() && user.interests.isNotEmpty()) select(user.interests)
+        if (!manualFilters && user.interests.isNotEmpty()) applySelection(user.interests)
     }
 
     fun select(interests: List<String>) {
-        state.value = state.value!!.copy(selected = interests)
+        manualFilters = true
+        applySelection(interests)
+    }
+
+    private fun applySelection(interests: List<String>) {
+        val values = com.ams.linkme.domain.InterestCatalog.normalize(interests)
+        if (state.value!!.selected == values && (state.value!!.searched || state.value!!.loading))
+            return
+        state.value = state.value!!.copy(selected = values)
         refresh()
     }
 
@@ -49,11 +58,12 @@ class MainViewModel : ViewModel() {
                                     DiscoveryState(
                                         people =
                                             LinkMeLogic.rankProfiles(
-                                                it,
-                                                repo.uid.orEmpty(),
-                                                selected,
-                                                excluded,
-                                            ),
+                                                    it,
+                                                    repo.uid.orEmpty(),
+                                                    selected,
+                                                    excluded,
+                                                )
+                                                .take(60),
                                         selected = selected,
                                         searched = true,
                                     )

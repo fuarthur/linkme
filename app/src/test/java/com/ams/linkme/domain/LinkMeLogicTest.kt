@@ -34,7 +34,7 @@ class LinkMeLogicTest {
     @Test
     fun interestsNormalizeLegacyPluralAndCaseAndKeepMovies() {
         assertEquals(
-            listOf("Sport", "Music", "Movie"),
+            listOf("Sport", "Music", "Movie", "unknown"),
             Interests.normalize(listOf("sports", " Music ", "music", "MOVIES", "unknown")),
         )
     }
@@ -81,10 +81,70 @@ class LinkMeLogicTest {
     }
 
     @Test
-    fun profileRejectsUnsupportedAndLongValues() {
+    fun profileRejectsLongValues() {
         assertNotNull(LinkMeLogic.validateProfile("A".repeat(41), "", listOf("Music")))
         assertNotNull(LinkMeLogic.validateProfile("Ari", "x".repeat(241), listOf("Music")))
-        assertNotNull(LinkMeLogic.validateProfile("Ari", "", listOf("Unknown")))
+    }
+
+    @Test
+    fun interestsPreserveCustomUnicodeDisplayAndDeduplicateNormalizedVariants() {
+        assertEquals(
+            listOf("陶艺 Club", "Live music"),
+            Interests.normalize(listOf("  陶艺　Club  ", "陶艺 CLUB", "Ｌｉｖｅ　ｍｕｓｉｃ", "live music")),
+        )
+    }
+
+    @Test
+    fun profileSupportsSixteenCustomLabels() {
+        val sixteen = (1..16).map { "My topic $it" }
+        assertNull(LinkMeLogic.validateProfile("Ari", "", sixteen))
+        assertNotNull(LinkMeLogic.validateProfile("Ari", "", sixteen + "One too many"))
+        assertNull(LinkMeLogic.validateProfile("Ari", "", listOf("  陶艺 Club  ")))
+    }
+
+    @Test
+    fun profileRejectsAliasAndCustomDuplicates() {
+        assertNotNull(LinkMeLogic.validateProfile("Ari", "", listOf("Movies", "film")))
+        assertNotNull(LinkMeLogic.validateProfile("Ari", "", listOf("陶艺 Club", " 陶艺　CLUB ")))
+    }
+
+    @Test
+    fun profileRejectsEmptyLongAndControlCharacterLabels() {
+        for (label in listOf(" ", "x".repeat(41), "Live\nmusic", "Art\u0000", "x\u007f")) {
+            assertNotNull(label, LinkMeLogic.validateProfile("Ari", "", listOf(label)))
+        }
+        assertNull(LinkMeLogic.validateProfile("Ari", "", listOf("x".repeat(40))))
+    }
+
+    @Test
+    fun discoveryRanksExactSpecificTopicBeforeMultipleBroadMatches() {
+        val people =
+            listOf(
+                User(
+                    uid = "related",
+                    username = "Ari",
+                    interests = listOf("Music", "Games", "Food"),
+                ),
+                User(uid = "exact", username = "Zoe", interests = listOf("Indie games")),
+            )
+        assertEquals(
+            listOf("exact", "related"),
+            LinkMeLogic.rankProfiles(people, "me", listOf("Indie games", "Live music", "Cooking"))
+                .map { it.uid },
+        )
+    }
+
+    @Test
+    fun discoveryMatchesCustomLabelsByNormalizedName() {
+        val people =
+            listOf(
+                User(uid = "same", username = "Zoe", interests = listOf("Ｃｉｔｙ　Sketchers")),
+                User(uid = "other", username = "Ari", interests = listOf("Different club")),
+            )
+        assertEquals(
+            listOf("same"),
+            LinkMeLogic.rankProfiles(people, "me", listOf(" city sketchers ")).map { it.uid },
+        )
     }
 
     @Test

@@ -1,6 +1,6 @@
 import { initializeApp, deleteApp } from 'firebase/app';
 import { getAuth, connectAuthEmulator, createUserWithEmailAndPassword, signInWithEmailAndPassword, inMemoryPersistence, setPersistence } from 'firebase/auth';
-import { getFirestore, connectFirestoreEmulator, doc, setDoc, serverTimestamp, writeBatch, terminate, deleteDoc, collection, query, where, limit, getDocs } from 'firebase/firestore';
+import { getFirestore, connectFirestoreEmulator, doc, serverTimestamp, writeBatch, terminate, deleteDoc, collection, query, where, limit, getDocs } from 'firebase/firestore';
 import { createHash } from 'node:crypto';
 
 // Synthetic preview only. Explicit emulator endpoints and demo project prevent production writes.
@@ -11,14 +11,26 @@ if(process.argv.includes('--reset')) {
   const response=await fetch(url,{method:'DELETE'});if(!response.ok)throw new Error(`Local fixture reset failed: ${response.status}`);
  }
 }
+const topicKeys = new Map([
+ ['Indie games', ['t:indie-games', 'g:games']],
+ ['Cooking', ['t:cooking', 'g:food']],
+ ['Live music', ['t:live-music', 'g:music']],
+ ['Astrophotography', ['t:astrophotography', 'g:tech']],
+ ['Photography', ['t:photography', 'g:creative']],
+ ['Hiking', ['t:hiking', 'g:outdoors']],
+ ['Vinyl records', ['t:vinyl-records', 'g:music']],
+ ['Anime', ['t:anime', 'g:screen']],
+ ['Movie', ['t:movie', 'g:screen']],
+ ['Indie rock', ['t:indie-rock', 'g:music']],
+]);
 const samples = [
- ['alex','Alex Morgan','Always up for a new playlist and a good co-op game.',['Music','Games','Food']],
- ['maya','Maya Chen','Looking for a concert buddy and someone to swap indie game recommendations with.',['Music','Games','Movie']],
- ['leo','Leo Rivera','Collecting new recipes and old records. Tell me what you are listening to.',['Music','Food']],
- ['nora','Nora Patel','Weekend hikes, film nights, and finding the best noodles in town.',['Sport','Movie','Food']],
- ['sam','Sam Taylor','A new album on repeat, a sketchbook nearby, and one more episode.',['Music','Anime']],
+ ['alex','Alex Morgan','Always up for a new playlist, a good co-op game, and a clear night sky.',['Indie games','Cooking','Live music','Astrophotography']],
+ ['maya','Maya Chen','Looking for a concert buddy and someone to swap indie game recommendations with.',['Indie games','Live music','Anime']],
+ ['leo','Leo Rivera','Collecting new recipes, old records, and photos from a walk around town.',['Cooking','Vinyl records','Photography']],
+ ['nora','Nora Patel','Weekend hikes, film nights, and finding the best noodles in town.',['Hiking','Movie','Cooking']],
+ ['sam','Sam Taylor','A new album on repeat and one more episode.',['Anime','Indie rock']],
  ['riley','Riley Brooks','Happy to talk about a great film long after the credits end.',['Movie']],
- ['hidden','Private Preview','This profile must not appear in discovery.',['Music','Games']]
+ ['hidden','Private Preview','This profile must not appear in discovery.',['Indie games']]
 ];
 const clients = new Map();
 for (const [key, username, bio, interests] of samples) {
@@ -30,9 +42,16 @@ for (const [key, username, bio, interests] of samples) {
  try { result = await createUserWithEmailAndPassword(auth,email,password); }
  catch (error) { if(error.code !== 'auth/email-already-in-use') throw error; result = await signInWithEmailAndPassword(auth,email,password); }
  const uid = result.user.uid;
- const profile = {uid,username,bio,interests,discoverable:key!=='hidden',updatedAt:serverTimestamp()};
- await setDoc(doc(db,'Users',uid),{...profile,email,phone:'202-555-0100',gender:'Not specified'},{merge:true});
- await setDoc(doc(db,'PublicProfiles',uid),profile);
+ const interestKeys = [...new Set(interests.flatMap((interest) => {
+  const keys = topicKeys.get(interest);
+  if (!keys) throw new Error(`Missing synthetic interest keys: ${interest}`);
+  return keys;
+ }))];
+ const profile = {uid,username,bio,interests,interestKeys,discoverable:key!=='hidden',updatedAt:serverTimestamp()};
+ const profileBatch = writeBatch(db);
+ profileBatch.set(doc(db,'Users',uid),{...profile,email,phone:'202-555-0100',gender:'Not specified'},{merge:true});
+ profileBatch.set(doc(db,'PublicProfiles',uid),profile);
+ await profileBatch.commit();
  clients.set(key,{app,auth,db,uid});
 }
 await deleteDoc(doc(clients.get('alex').db,'Users',clients.get('alex').uid,'Blocked',clients.get('maya').uid));

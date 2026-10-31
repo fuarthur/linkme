@@ -58,15 +58,87 @@ service cloud.firestore {
         && !exists(/databases/$(database)/documents/Users/$(second)/Blocked/$(first));
     }
 
+    function validInterest(label) {
+      // Android normalizes aliases/spacing. A label needs a visible character
+      // and cannot contain C0/C1 controls; size() counts UTF-16 code units.
+      return label is string && label.size() <= 40
+        && label.matches('[^\\p{Cc}]*[^\\s\\p{Z}\\p{Cf}\\p{Cc}][^\\p{Cc}]*');
+    }
+
+    function validInterests(interests) {
+      let count = interests.size();
+      // Rules have no loops. Keep these checks flat to fit the expression budget.
+      return interests is list && count >= 1 && count <= 16
+        && interests.toSet().size() == count
+        && validInterest(interests[0])
+        && (count <= 1 || validInterest(interests[1]))
+        && (count <= 2 || validInterest(interests[2]))
+        && (count <= 3 || validInterest(interests[3]))
+        && (count <= 4 || validInterest(interests[4]))
+        && (count <= 5 || validInterest(interests[5]))
+        && (count <= 6 || validInterest(interests[6]))
+        && (count <= 7 || validInterest(interests[7]))
+        && (count <= 8 || validInterest(interests[8]))
+        && (count <= 9 || validInterest(interests[9]))
+        && (count <= 10 || validInterest(interests[10]))
+        && (count <= 11 || validInterest(interests[11]))
+        && (count <= 12 || validInterest(interests[12]))
+        && (count <= 13 || validInterest(interests[13]))
+        && (count <= 14 || validInterest(interests[14]))
+        && (count <= 15 || validInterest(interests[15]));
+    }
+
+    function validInterestKey(key) {
+      // matches() is string-only: other Firestore types fail closed. A single
+      // ASCII pattern checks type and the 72-code-unit bound within the budget.
+      return key.matches('([tg]:[a-z0-9]([a-z0-9-]{0,68}[a-z0-9])?|c:[0-9a-f]{64})');
+    }
+
+    function validInterestKeys(keys) {
+      let count = keys.size();
+      // Candidate hints grant no access and do not prove label/key equivalence.
+      return keys is list && count >= 1 && count <= 30
+        && keys.toSet().size() == count
+        && validInterestKey(keys[0])
+        && (count <= 1 || validInterestKey(keys[1]))
+        && (count <= 2 || validInterestKey(keys[2]))
+        && (count <= 3 || validInterestKey(keys[3]))
+        && (count <= 4 || validInterestKey(keys[4]))
+        && (count <= 5 || validInterestKey(keys[5]))
+        && (count <= 6 || validInterestKey(keys[6]))
+        && (count <= 7 || validInterestKey(keys[7]))
+        && (count <= 8 || validInterestKey(keys[8]))
+        && (count <= 9 || validInterestKey(keys[9]))
+        && (count <= 10 || validInterestKey(keys[10]))
+        && (count <= 11 || validInterestKey(keys[11]))
+        && (count <= 12 || validInterestKey(keys[12]))
+        && (count <= 13 || validInterestKey(keys[13]))
+        && (count <= 14 || validInterestKey(keys[14]))
+        && (count <= 15 || validInterestKey(keys[15]))
+        && (count <= 16 || validInterestKey(keys[16]))
+        && (count <= 17 || validInterestKey(keys[17]))
+        && (count <= 18 || validInterestKey(keys[18]))
+        && (count <= 19 || validInterestKey(keys[19]))
+        && (count <= 20 || validInterestKey(keys[20]))
+        && (count <= 21 || validInterestKey(keys[21]))
+        && (count <= 22 || validInterestKey(keys[22]))
+        && (count <= 23 || validInterestKey(keys[23]))
+        && (count <= 24 || validInterestKey(keys[24]))
+        && (count <= 25 || validInterestKey(keys[25]))
+        && (count <= 26 || validInterestKey(keys[26]))
+        && (count <= 27 || validInterestKey(keys[27]))
+        && (count <= 28 || validInterestKey(keys[28]))
+        && (count <= 29 || validInterestKey(keys[29]));
+    }
+
     function validPublicProfile(data, uid) {
       return data.keys().hasAll(['uid', 'username', 'bio', 'interests', 'discoverable', 'updatedAt'])
-        && data.keys().hasOnly(['uid', 'username', 'bio', 'interests', 'discoverable', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'username', 'bio', 'interests', 'interestKeys', 'discoverable', 'updatedAt'])
         && data.uid == uid
         && data.username is string && data.username.size() >= 1 && data.username.size() <= 40
         && data.bio is string && data.bio.size() <= 240
-        && data.interests is list && data.interests.size() >= 1 && data.interests.size() <= 8
-        && data.interests.toSet().size() == data.interests.size()
-        && data.interests.toSet().hasOnly(['Sport', 'Food', 'Dating', 'Games', 'Music', 'Anime', 'Movie', 'Other'])
+        && validInterests(data.interests)
+        && (!data.keys().hasAny(['interestKeys']) || validInterestKeys(data.interestKeys))
         && data.discoverable is bool
         && data.updatedAt is timestamp && data.updatedAt == request.time;
     }
@@ -141,7 +213,11 @@ service cloud.firestore {
     match /PublicProfiles/{uid} {
       allow get: if signedIn() && (owns(uid) || resource.data.discoverable == true);
       allow list: if signedIn() && bounded(60) && resource.data.discoverable == true;
-      allow create, update: if owns(uid) && validPublicProfile(request.resource.data, uid);
+      allow create: if owns(uid) && validPublicProfile(request.resource.data, uid);
+      allow update: if owns(uid) && validPublicProfile(request.resource.data, uid)
+        // Preserve opt-in schema: old replacement saves must fail atomically.
+        && (!resource.data.keys().hasAny(['interestKeys'])
+          || request.resource.data.keys().hasAll(['interestKeys']));
       allow delete: if false;
     }
 

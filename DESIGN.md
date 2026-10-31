@@ -147,6 +147,7 @@ The implementation uses paired light/dark resource colors, system sans text, rou
 **Key Characteristics:**
 - Original purple primary roles, with separate light and dark palettes.
 - Native Material buttons, outlined fields, chips, toolbar and adaptive navigation.
+- A dedicated interest draft editor with removable selected chips and optional local suggestions.
 - Initial avatars, visible shared-interest text and real conversation content.
 - System font scaling, scrollable forms and system/keyboard inset handling.
 
@@ -172,7 +173,7 @@ The theme’s font family is Android `sans`. The shared label helper selects `sa
 | `auth-title` | Authentication heading |
 | `screen-title` | Discover, Chats and Your profile headings |
 | `section-title` | Empty-state headings, LinkMe name and chat welcome heading |
-| `person-name` | Discovery card names and profile interest heading |
+| `person-name` | Discovery card names, profile interest heading and interest-editor section headings |
 | `avatar-initials` | Initial avatar text |
 | `conversation-name` | Inbox names |
 | `intro` | Authentication subtitle |
@@ -185,7 +186,9 @@ Sizes are in the frontmatter. Native Material button, chip, toolbar and navigati
 
 ## Layout
 
-The main content is centered and capped at 720dp by `ContentFrame`. Compact widths use a bottom navigation bar with Discover, Chats and Profile. At `screenWidthDp >= 600`, the same destinations use an 88dp-wide navigation rail. There is no web breakpoint model in the Android implementation. When `screenHeightDp / fontScale < 600`, Discover uses 16dp header padding and one horizontally scrollable chip row; its helper subtitle/heading are hidden to retain a usable people list. Other windows retain the wrapped chip group and 24dp header padding.
+The main content is centered and capped at 720dp by `ContentFrame`. Compact widths use a bottom navigation bar with Discover, Chats and Profile. At `screenWidthDp >= 600`, the same destinations use an 88dp-wide navigation rail. There is no web breakpoint model in the Android implementation. Discover always uses one horizontally scrollable row for the selected interest mix, followed by an outlined Explore & filter interests button. When `screenHeightDp / fontScale < 600`, its header padding reduces from 24dp to 16dp and its helper subtitle is hidden to retain a usable people list. Profile keeps a wrapping interest mix and an outlined Edit interests button.
+
+The dedicated interest editor keeps its Material toolbar and action footer outside the fill-viewport ScrollView. At normal effective heights, the search field and selected-count label also stay outside the scrolling body. When `screenHeightDp / fontScale < 600`, that search area moves into the ScrollView so the body remains reachable; the toolbar and footer stay in place. The search editor is a stable view while query results and other body content update. During the optional scene questions, search is hidden and the footer offers Skip this question.
 
 Main screen headers and profile content use 24dp padding; the authentication form uses 28dp; discovery card interiors use 20dp. The spacing entries above are the actual repeated values, including the smaller 5dp message spacing and 6dp card margins. Cards have 20dp horizontal and 6dp vertical outer margins. Inbox rows use 24dp horizontal and 18dp vertical padding and a 96dp minimum height.
 
@@ -211,11 +214,21 @@ Fields use `TextInputLayout.BOX_BACKGROUND_OUTLINE` and `TextInputEditText`. The
 
 ### Chips
 
-Discovery and profile chips are checkable native `Chip` instances with a 48dp minimum height. Their group has 8dp horizontal and 4dp vertical spacing and wraps across lines. Colors, corner shape and state layers are inherited from Material 3.
+Interest chips use native `Chip` controls with a 48dp minimum height and an ensured minimum touch target. Chip groups use 8dp horizontal and 4dp vertical spacing. Discover and Profile show the current mix as chips that open the editor; they are not inline checkboxes. Discover keeps its mix in one horizontal scroll row, while Profile wraps it.
+
+In the editor, search and browse topics are checkable chips. Your mix uses removable chips with an explicit close action, `primary-container` background and `on-primary-container` text and close icon. Long selected labels are end-ellipsized within the content width, and each close action has a Remove [interest] description. Suggestion chips start unselected and add an interest only when tapped. Other chip colors, corner shape and state layers remain inherited from Material 3.
+
+### Interest editor
+
+The outlined Search or create an interest field supports local catalog search and custom labels, with a 40-unit input limit. A visible selected counter supports a mix of up to 16 interests. Search results and custom creation share the same field; the filled Use [count] interests action is disabled for an empty mix. The UI is English; selected Chinese search aliases provide catalog lookup without implying a translated interface.
+
+With an empty search query, the outlined Help me find my interests action appears immediately after Your mix and before Ideas to explore. Local suggestions are grouped by their source: introduction mentions, scene choices or a related catalog category. The optional flow presents three scene questions, a numbered toolbar subtitle, outlined choice buttons and Skip this question. Choosing or skipping questions shapes suggestions without adding them to the mix. Browse interests uses a horizontal category rail, wrapping topic chips and Show more topics.
+
+Use interests returns a local draft to the caller. From Profile, the returned mix stays in the profile form until Save profile publishes it; from Discover, it changes the discovery filters. The editor explains the caller-specific next step. Back from a question returns to editing without applying the unfinished question run; Back from editing cancels the activity draft.
 
 ### Cards / Containers
 
-People cards use the `people-card` token assignment, zero elevation and the outlined boundary described above. They show initials, name, a shared-interest count, biography, explicit common interests and an outlined Say hello action. The card does not show private contact details or a fabricated match score.
+People cards use the `people-card` token assignment, zero elevation and the outlined boundary described above. They show initials, name, biography and an outlined Say hello action. Exact common topics use a shared-interest count and You both enjoy text; category-only connections use A related interest and Connected through text. Additional interests appear as Also into text. The card does not show private contact details or a fabricated match score.
 
 ### Navigation
 

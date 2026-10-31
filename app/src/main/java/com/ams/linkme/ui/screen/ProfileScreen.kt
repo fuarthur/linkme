@@ -18,6 +18,7 @@ import com.google.android.material.snackbar.Snackbar
 class ProfileScreen(
     private val activity: AppCompatActivity,
     private val model: ProfileViewModel,
+    onEditInterests: () -> Unit,
     onSignOut: () -> Unit,
 ) {
     private val body = activity.column(24)
@@ -57,29 +58,30 @@ class ProfileScreen(
                 space(top = 4)
             }
         )
-        form.addView(activity.label("What are you into?", 20f, true).apply { space(top = 28) })
+        form.addView(activity.label("Your interest mix", 20f, true).apply { space(top = 28) })
         form.addView(
             activity
-                .label("Choose at least one. You can change these anytime.", 14f, secondary = true)
+                .label(
+                    "Specific topics, unexpected combinations, your own words.",
+                    14f,
+                    secondary = true,
+                )
                 .apply { space(top = 6, bottom = 8) }
         )
         val group =
             ChipGroup(activity).apply {
-                isSingleSelection = false
                 chipSpacingHorizontal = activity.dp(8)
                 chipSpacingVertical = activity.dp(4)
             }
-        val chips =
-            Interests.all.associateWith { interest ->
-                Chip(activity).apply {
-                    text = Interests.label(interest)
-                    isCheckable = true
-                    minimumHeight = activity.dp(48)
-                    setEnsureMinTouchTargetSize(true)
-                    group.addView(this)
-                }
-            }
         form.addView(group)
+        form.addView(
+            activity.button("Edit interests", outlined = true).apply {
+                id = R.id.profile_interests
+                space(top = 8)
+                setOnClickListener { onEditInterests() }
+            }
+        )
+        var displayedInterests: List<String>? = null
         val visible =
             MaterialSwitch(activity).apply {
                 text = "Show my profile in Discover"
@@ -127,22 +129,31 @@ class ProfileScreen(
             form.visibility = if (model.draftLoaded) View.VISIBLE else View.GONE
             save.text = if (state.saving) "Saving…" else "Save profile"
             save.isEnabled = !state.saving && model.draftLoaded
+            val tags = model.interests.toList()
+            if (model.draftLoaded && tags != displayedInterests) {
+                displayedInterests = tags
+                group.removeAllViews()
+                tags.forEach { tag ->
+                    group.addView(
+                        Chip(activity).apply {
+                            text = Interests.label(tag)
+                            minimumHeight = activity.dp(48)
+                            setEnsureMinTouchTargetSize(true)
+                            setOnClickListener { onEditInterests() }
+                        }
+                    )
+                }
+            }
             if (model.draftLoaded && !populated) {
                 name.setText(model.name)
                 bio.setText(model.bio)
                 visible.isChecked = model.discoverable
-                chips.forEach { (interest, chip) -> chip.isChecked = interest in model.interests }
                 populated = true
             }
         }
         name.doAfterTextChanged { model.name = it.toString() }
         bio.doAfterTextChanged { model.bio = it.toString() }
         visible.setOnCheckedChangeListener { _, checked -> model.discoverable = checked }
-        chips.forEach { (interest, chip) ->
-            chip.setOnCheckedChangeListener { _, checked ->
-                if (checked) model.interests.add(interest) else model.interests.remove(interest)
-            }
-        }
     }
 
     private fun showBlocked() {

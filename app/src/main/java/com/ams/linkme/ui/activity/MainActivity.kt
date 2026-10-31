@@ -7,10 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import com.ams.linkme.R
 import com.ams.linkme.data.LinkMeRepository
+import com.ams.linkme.domain.InterestCatalog
 import com.ams.linkme.model.User
 import com.ams.linkme.ui.*
 import com.ams.linkme.ui.screen.DiscoverScreen
@@ -29,11 +31,33 @@ class MainActivity : AppCompatActivity() {
     private val repo = LinkMeRepository.instance
     private lateinit var inbox: InboxViewModel
     private lateinit var discovery: MainViewModel
+    private lateinit var profile: ProfileViewModel
     private lateinit var navigation: NavigationBarView
     private var selected = R.id.nav_discover
     private var visible = false
     private var completingSetup = false
     private val pages = mutableMapOf<Int, View>()
+    private val editProfileInterests =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK)
+                result.data?.getStringArrayListExtra("selectedInterests")?.let {
+                    profile.setInterests(it)
+                }
+        }
+    private val editDiscoveryInterests =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK)
+                result.data?.getStringArrayListExtra("selectedInterests")?.let {
+                    discovery.select(it)
+                }
+        }
+
+    private fun editorIntent(selected: List<String>, purpose: String) =
+        Intent(this, InterestsActivity::class.java)
+            .putStringArrayListExtra("selectedInterests", ArrayList(selected))
+            .putExtra("introduction", profile.bio)
+            .putExtra("editorPurpose", purpose)
+
     private val authListener =
         FirebaseAuth.AuthStateListener { if (it.currentUser == null) openLogin() }
 
@@ -45,11 +69,15 @@ class MainActivity : AppCompatActivity() {
         }
         discovery = ViewModelProvider(this)[MainViewModel::class.java]
         inbox = ViewModelProvider(this)[InboxViewModel::class.java]
-        val profile = ViewModelProvider(this)[ProfileViewModel::class.java]
+        profile = ViewModelProvider(this)[ProfileViewModel::class.java]
         selected = savedInstanceState?.getInt("tab", R.id.nav_discover) ?: R.id.nav_discover
         completingSetup = savedInstanceState?.getBoolean("completingSetup") ?: false
         val discoverScreen =
-            DiscoverScreen(this, discovery, ::openChat) { showTab(R.id.nav_profile) }
+            DiscoverScreen(this, discovery, ::openChat) {
+                editDiscoveryInterests.launch(
+                    editorIntent(discovery.state.value!!.selected, "discover")
+                )
+            }
         val inboxScreen =
             InboxScreen(
                 this,
@@ -64,7 +92,13 @@ class MainActivity : AppCompatActivity() {
                 showTab(R.id.nav_discover)
             }
         val profileScreen =
-            ProfileScreen(this, profile) {
+            ProfileScreen(
+                this,
+                profile,
+                onEditInterests = {
+                    editProfileInterests.launch(editorIntent(profile.interests.toList(), "profile"))
+                },
+            ) {
                 inbox.stop()
                 repo.signOut()
                 openLogin()
@@ -139,9 +173,8 @@ class MainActivity : AppCompatActivity() {
             }
             if (state.saved > savedSeen) {
                 savedSeen = state.saved
-                discovery.refresh()
                 Snackbar.make(root, "Profile saved", Snackbar.LENGTH_SHORT)
-                    .setAnchorView(navigation)
+                    .apply { if (navigation is BottomNavigationView) setAnchorView(navigation) }
                     .show()
                 if (completingSetup) {
                     completingSetup = false
@@ -162,7 +195,10 @@ class MainActivity : AppCompatActivity() {
                 .putExtra("username", user.username)
                 .putStringArrayListExtra(
                     "sharedInterests",
-                    ArrayList(user.interests.filter { it in discovery.state.value!!.selected }),
+                    ArrayList(
+                        InterestCatalog.match(discovery.state.value!!.selected, user.interests)
+                            .let { it.exact.ifEmpty { it.relatedGroups } }
+                    ),
                 )
         )
     }

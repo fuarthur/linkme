@@ -10,5 +10,6 @@
         </activity>
         <activity android:name=".ui.activity.MainActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
         <activity android:name=".ui.activity.ChatActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".ui.activity.InterestsActivity" android:exported="false" android:windowSoftInputMode="adjustResize" />
     </application>
 </manifest>

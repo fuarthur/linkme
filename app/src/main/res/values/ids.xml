@@ -16,4 +16,15 @@
     <item name="chat_list" type="id" />
     <item name="main_navigation" type="id" />
     <item name="older_chats" type="id" />
+    <item name="interest_search" type="id" />
+    <item name="interest_create" type="id" />
+    <item name="interests_selected" type="id" />
+    <item name="interest_done" type="id" />
+    <item name="interest_explore" type="id" />
+    <item name="interest_skip" type="id" />
+    <item name="interest_choice_one" type="id" />
+    <item name="interest_choice_two" type="id" />
+    <item name="interest_choice_three" type="id" />
+    <item name="profile_interests" type="id" />
+    <item name="discover_interests" type="id" />
 </resources>
