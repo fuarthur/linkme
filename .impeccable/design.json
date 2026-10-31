@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-31T05:36:04Z",
+  "generatedAt": "2026-10-31T06:44:58Z",
   "title": "Design System: LinkMe",
   "extensions": {
     "colorMeta": {
@@ -72,6 +72,11 @@
         "name": "compact-interest-editor-height",
         "value": "screenHeightDp / fontScale < 600",
         "purpose": "Move the stable search field and selected counter into the editor ScrollView. The toolbar and action footer stay outside; search stays fixed above the scrolling body at normal heights."
+      },
+      {
+        "name": "compact-wiki-picker-height",
+        "value": "screenHeightDp / fontScale < 600",
+        "purpose": "Keep Wiki status to one end-ellipsized line and row descriptions to one line. Search and Fields share a row. Toolbar/header and action footer remain outside the weighted RecyclerView; loading keeps a blank weighted list region so the footer stays at the bottom."
       }
     ]
   },
@@ -104,14 +109,14 @@
       "name": "Outlined field — native preview",
       "kind": "input",
       "refersTo": "field-outlined",
-      "description": "Preview only at 1dp ≈ 1 CSS px and 1sp ≈ 1 CSS px; native source is authoritative. Ui.kt field(): outlined box, 14dp corners, 56dp editor minimum height, 16sp text and 16dp editor padding. Floating label/error rendering remains native. InterestsActivity reuses a stable search/custom-label field with a 40-unit input limit and a selected counter for up to 16 interests; only the body rerenders during search.",
+      "description": "Preview only at 1dp ≈ 1 CSS px and 1sp ≈ 1 CSS px; native source is authoritative. Ui.kt field(): outlined box, 14dp corners, 56dp editor minimum height, 16sp text and 16dp editor padding. Floating label/error rendering remains native. InterestsActivity reuses a stable search/custom-label field with a 40-unit input limit and a selected counter for up to 16 interests; only the body rerenders during search. WikiTopicsActivity separately reuses this primitive for a stable 120-unit search beside Fields; WikiTopicsViewModel loads/searches the offline snapshot off the main thread and rejects stale generations.",
       "html": "<p class=\"ds-preview-note\">Native Android preview · not production source</p><label class=\"ds-preview-stage ds-field\"><span>Display name</span><input aria-label=\"Display name\" value=\"Alex\" /></label>",
       "css": ".ds-preview-note{font:12px sans-serif;color:#625C6A;margin:0 0 8px}.ds-preview-stage{font-family:sans-serif;color:#231F29}.ds-preview-stage:focus-visible,.ds-preview-stage button:focus-visible,.ds-preview-stage input:focus-visible{outline:auto}.ds-field{display:block;font-family:sans-serif;color:#231F29}.ds-field span{display:block}.ds-field input{display:block;width:100%;min-height:56px;padding:16px;border:1px solid #7C7485;border-radius:14px;background:#FCFAFF;color:#231F29;font:16px sans-serif}@media(prefers-color-scheme:dark){.ds-field,.ds-field input{color:#EAE2EF}.ds-field input{background:#17131C;border-color:#968D9E}}"
     },
     {
       "name": "Interest topic — native preview",
       "kind": "chip",
-      "description": "Preview only at 1dp ≈ 1 CSS px and 1sp ≈ 1 CSS px; native source is authoritative. InterestsActivity topicChip(): checkable search/browse topic, minimum height 48dp, ensured touch target and group gaps 8dp horizontally/4dp vertically. Suggestions start unselected and are grouped by introduction, scene-choice or category source. Your mix uses separate primary-container removable chips; Discover/Profile mix chips open the editor. Native chip geometry and state layers are inherited.",
+      "description": "Preview only at 1dp ≈ 1 CSS px and 1sp ≈ 1 CSS px; native source is authoritative. InterestsActivity topicChip(): checkable search/browse topic, minimum height 48dp, ensured touch target and group gaps 8dp horizontally/4dp vertically. Suggestions start unselected and are grouped by introduction, scene-choice or category source. Your mix uses separate primary-container removable chips; Discover/Profile mix chips open the editor. Native chip geometry and state layers are inherited. Long Profile chips are width-bounded and end-ellipsized; full Wiki labels resolve through a small generated reference lookup. The separate 30,919-topic Wiki picker uses virtualized checkbox rows with title, description, field and Info, rather than rendering the library as chips.",
       "html": "<p class=\"ds-preview-note\">Native Android preview · not production source</p><label class=\"ds-preview-stage ds-chip\"><input type=\"checkbox\" checked />Music</label>",
       "css": ".ds-preview-note{font:12px sans-serif;color:#625C6A;margin:0 0 8px}.ds-preview-stage{font-family:sans-serif;color:#231F29}.ds-preview-stage:focus-visible,.ds-preview-stage button:focus-visible,.ds-preview-stage input:focus-visible{outline:auto}.ds-chip{display:inline-flex;align-items:center;gap:8px;min-height:48px;font-family:sans-serif}.ds-chip input{accent-color:#5940A8}.ds-chip:hover{cursor:pointer}@media(prefers-color-scheme:dark){.ds-chip{color:#EAE2EF}.ds-chip input{accent-color:#D0BCFF}}"
     },
@@ -160,7 +165,7 @@
     "keyCharacteristics": [
       "Original purple primary roles, with separate light and dark palettes.",
       "Native Material buttons, outlined fields, chips, toolbar and adaptive navigation.",
-      "A dedicated interest draft editor with removable selected chips and optional local suggestions.",
+      "A dedicated interest draft editor with removable selected chips, optional local suggestions and an offline Wiki topic library.",
       "Initial avatars, visible shared-interest text and real conversation content.",
       "System font scaling, scrollable forms and system/keyboard inset handling."
     ],

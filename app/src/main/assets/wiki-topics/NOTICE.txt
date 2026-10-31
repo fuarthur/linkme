@@ -1,0 +1,27 @@
+LinkMe offline Wiki topic library
+
+Credits: Wikidata contributors; Wikipedia and Wikimedia contributors; OtherWise
+public catalog selection and domain grouping. OtherWise is the immediate public
+snapshot source. Exact input SHA256 hashes, snapshot date, counts, list revisions
+and LinkMe transformations are in provenance.json. Each imported entity's public
+source URL, Wikidata revision, list revision and subsection are preserved in
+record-provenance.jsonl.gz. Retained guide rows without a recorded list URL use
+the credited Wikimedia expanded-guide URL; that inference is explicitly marked.
+
+Wikidata structured labels and short descriptions are CC0:
+https://www.wikidata.org/wiki/Wikidata:Licensing
+https://creativecommons.org/publicdomain/zero/1.0/
+
+The derived topic selection and domain grouping are distributed under CC BY-SA
+4.0, with credit to the contributors and OtherWise named above:
+https://creativecommons.org/licenses/by-sa/4.0/
+https://en.wikipedia.org/wiki/Wikipedia:Vital_articles/Level/5
+https://meta.wikimedia.org/wiki/List_of_articles_every_Wikipedia_should_have/Expanded
+
+LinkMe modifications: omit the separately authored records; retain every imported
+Wikidata identity and full title; normalize description whitespace for TSV; sort
+and compress reproducibly; add compact storage references for long/colliding
+labels and five broader meanings that conflict with existing starter aliases.
+The modified selection/grouping remains CC BY-SA 4.0. Article bodies, authored
+OtherWise descriptions, implementation code and personal data are not included.
+No endorsement by Wikimedia, Wikipedia, Wikidata or OtherWise is implied.

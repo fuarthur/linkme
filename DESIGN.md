@@ -147,11 +147,11 @@ The implementation uses paired light/dark resource colors, system sans text, rou
 **Key Characteristics:**
 - Original purple primary roles, with separate light and dark palettes.
 - Native Material buttons, outlined fields, chips, toolbar and adaptive navigation.
-- A dedicated interest draft editor with removable selected chips and optional local suggestions.
+- A dedicated interest draft editor with removable selected chips, optional local suggestions and an offline Wiki topic library.
 - Initial avatars, visible shared-interest text and real conversation content.
 - System font scaling, scrollable forms and system/keyboard inset handling.
 
-Source of truth: `app/src/main/res/values/colors.xml`, `app/src/main/res/values-night/colors.xml`, `app/src/main/res/values/themes.xml`, `ui/Ui.kt`, the screen/activity implementations and the three adapters. Native dp/sp units in frontmatter are intentional. Component HTML/CSS in `.impeccable/design.json` is a labeled preview translation at density/font scale 1, not runtime code.
+Source of truth: `app/src/main/res/values/colors.xml`, `app/src/main/res/values-night/colors.xml`, `app/src/main/res/values/themes.xml`, `ui/Ui.kt`, the screen/activity implementations and adapters. Wiki behavior is implemented by `WikiTopicsActivity`, `WikiTopicsViewModel`, `WikiTopicsAdapter` and `WikiTopicRepository`; `InterestCatalog` and the generated `WikiTopicReferences` supply stored-label compatibility. Native dp/sp units in frontmatter are intentional. Component HTML/CSS in `.impeccable/design.json` is a labeled preview translation at density/font scale 1, not runtime code.
 
 ## Colors
 
@@ -190,6 +190,8 @@ The main content is centered and capped at 720dp by `ContentFrame`. Compact widt
 
 The dedicated interest editor keeps its Material toolbar and action footer outside the fill-viewport ScrollView. At normal effective heights, the search field and selected-count label also stay outside the scrolling body. When `screenHeightDp / fontScale < 600`, that search area moves into the ScrollView so the body remains reachable; the toolbar and footer stay in place. The search editor is a stable view while query results and other body content update. During the optional scene questions, search is hidden and the footer offers Skip this question.
 
+The Wiki picker shares the centered 720dp content frame, native toolbar and keyboard insets. Its outlined search field and text-only Fields action share one row; the header uses 16dp horizontal padding. A status line reports the current field, result count and selected count. At `screenHeightDp / fontScale < 600`, that line is end-ellipsized to one line and row descriptions reduce from two lines to one. The toolbar, search/header and filled action footer remain outside the weighted RecyclerView. During loading, the list remains as a weighted blank region below the progress indicator, keeping the footer at the bottom. Empty and load-error content use a scrollable weighted region in its place. The footer uses 16dp horizontal padding and remains reachable above the keyboard.
+
 Main screen headers and profile content use 24dp padding; the authentication form uses 28dp; discovery card interiors use 20dp. The spacing entries above are the actual repeated values, including the smaller 5dp message spacing and 6dp card margins. Cards have 20dp horizontal and 6dp vertical outer margins. Inbox rows use 24dp horizontal and 18dp vertical padding and a 96dp minimum height.
 
 Forms use fill-viewport scrolling. `mount` applies system-bar and display-cutout insets; IME-aware roots use the larger of keyboard and bottom-system insets. Text follows Android font scaling. Message text is capped at 72% of the smaller of display width and 720dp; the surrounding bubble adds its own padding.
@@ -214,17 +216,29 @@ Fields use `TextInputLayout.BOX_BACKGROUND_OUTLINE` and `TextInputEditText`. The
 
 ### Chips
 
-Interest chips use native `Chip` controls with a 48dp minimum height and an ensured minimum touch target. Chip groups use 8dp horizontal and 4dp vertical spacing. Discover and Profile show the current mix as chips that open the editor; they are not inline checkboxes. Discover keeps its mix in one horizontal scroll row, while Profile wraps it.
+Interest chips use native `Chip` controls with a 48dp minimum height and an ensured minimum touch target. Chip groups use 8dp horizontal and 4dp vertical spacing. Discover and Profile show the current mix as chips that open the editor; they are not inline checkboxes. Discover keeps its mix in one horizontal scroll row, while Profile wraps it. Profile resolves compact Wiki references to their full labels with the small generated lookup, without loading the full Wiki index. Its chips cap width at the smaller of the display width and 720dp, less 48dp, and end-ellipsize long text.
 
 In the editor, search and browse topics are checkable chips. Your mix uses removable chips with an explicit close action, `primary-container` background and `on-primary-container` text and close icon. Long selected labels are end-ellipsized within the content width, and each close action has a Remove [interest] description. Suggestion chips start unselected and add an interest only when tapped. Other chip colors, corner shape and state layers remain inherited from Material 3.
 
 ### Interest editor
 
-The outlined Search or create an interest field supports local catalog search and custom labels, with a 40-unit input limit. A visible selected counter supports a mix of up to 16 interests. Search results and custom creation share the same field; the filled Use [count] interests action is disabled for an empty mix. The UI is English; selected Chinese search aliases provide catalog lookup without implying a translated interface.
+The outlined Search or create an interest field supports the 148 starter topics in 12 groups and custom labels, with a 40-UTF-16-unit input limit. A visible selected counter supports a mix of up to 16 interests. Search results and custom creation share the same field; the filled Use [count] interests action is disabled for an empty mix. The UI is English; the original Chinese starter aliases remain available. The separate Wiki snapshot uses English titles and does not provide a translated Chinese Wiki library.
 
-With an empty search query, the outlined Help me find my interests action appears immediately after Your mix and before Ideas to explore. Local suggestions are grouped by their source: introduction mentions, scene choices or a related catalog category. The optional flow presents three scene questions, a numbered toolbar subtitle, outlined choice buttons and Skip this question. Choosing or skipping questions shapes suggestions without adding them to the mix. Browse interests uses a horizontal category rail, wrapping topic chips and Show more topics.
+With an empty search query, the outlined Help me find my interests action follows Your mix, then Browse Wiki topics appears before Ideas to explore. With a typed query, Search the Wiki topic library appears after starter results and before custom creation; it passes that query and the current mix into the separate picker. Local suggestions are grouped by their source: introduction mentions, scene choices or a related catalog category. The optional flow presents three scene questions, a numbered toolbar subtitle, outlined choice buttons and Skip this question. Choosing or skipping questions shapes suggestions without adding them to the mix. Browse interests uses a horizontal category rail, wrapping topic chips and Show more topics.
 
-Use interests returns a local draft to the caller. From Profile, the returned mix stays in the profile form until Save profile publishes it; from Discover, it changes the discovery filters. The editor explains the caller-specific next step. Back from a question returns to editing without applying the unfinished question run; Back from editing cancels the activity draft.
+The Wiki picker returns only on its explicit Use action; the parent editor replaces its local mix and clears its search. Back from Wiki cancels that picker draft and leaves the parent mix unchanged. The parent editor’s own Use interests action returns a local draft to its caller. From Profile, the returned mix stays in the profile form until Save profile publishes it; from Discover, it changes only the separate discovery filters. The editor explains the caller-specific next step. Back from a question returns to editing without applying the unfinished question run; Back from editing cancels the activity draft.
+
+### Wiki topic picker
+
+The offline library contains 30,919 Wikidata-sourced topics in 23 fields from OtherWise’s public snapshot. It excludes the 718 separately authored OtherWise records. It loads and searches off the main thread, suppresses stale search results and retains query, field and selected mix across recreation. The search input is limited to 120 UTF-16 units, separately from the existing 40-unit stored-interest limit. The full unfiltered library is available through a RecyclerView that binds visible rows rather than constructing a control for every topic.
+
+Rows use native state layers and dividers, a 96dp minimum height and 16dp horizontal/12dp vertical padding. Each presents a Material checkbox, a medium-weight title of up to two lines, a short description, the field and a text-only Info action. Compact descriptions use one line; other descriptions use up to two. The tappable row exposes the title, description, field and checked state as one checkbox role; the visual checkbox and text do not create duplicate accessibility nodes. Info, or a long press, opens full topic details, including the complete title, description, field and a Read source action to that Wikidata entity.
+
+Fields opens a single-choice native dialog with All fields and the 23 imported fields. Sources in the toolbar opens a credit dialog with linked licensing and source information: Wikidata names/descriptions under CC0, and Wikipedia/Wikimedia selection and fields via OtherWise under CC BY-SA 4.0. These credits and the bundled provenance describe an offline data import; no OtherWise service is started.
+
+The status reports result and selected counts with singular/plural wording. A full mix shows an inline error with a next action instead of adding a seventeenth interest. Loading shows progress without displacing the bottom action; load failure offers Try again and guidance to return to the mix. Nothing matched suggests another English title or field, or returning to create a custom interest. The filled Use [count] interest(s) footer is disabled for an empty mix and returns a local selection only.
+
+Stored interests keep the existing length, selection and lookup-key policy. Ordinary Wiki titles use literal values. A generated lookup restores complete labels for 152 compact references: 147 long titles and five titles whose meanings would otherwise be narrowed by starter aliases. Titles are not truncated into stored identities, and distinct meanings remain separate. These labels do not imply inferred interests, match scores or automatic profile publication.
 
 ### Cards / Containers
 

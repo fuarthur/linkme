@@ -1,0 +1,130 @@
+{
+  "artifacts": {
+    "WikiTopicReferences.kt": {
+      "bytes": 12284,
+      "sha256": "5150b26876e403d5d6bb4f6de885e7d2b96b9e744a9accf688aa71fc6ecdfc87"
+    },
+    "record-provenance.jsonl.gz": {
+      "bytes": 1452496,
+      "sha256": "6be262056901d14865b1490912fbffa681aa06f29b44c8595cf06d92ddfc8570",
+      "uncompressed_bytes": 15548509
+    },
+    "topics.tsv.gz": {
+      "bytes": 1157819,
+      "sha256": "a9ce59f9e1b88f3c43be42c2160849593e68e0987d5f05f3dbec1cc66cb9a910",
+      "uncompressed_bytes": 3495903
+    }
+  },
+  "changes": [
+    "Select only records explicitly sourced to Wikidata; omit all separately authored records.",
+    "Retain titles, IDs, domains and public record revisions; collapse description whitespace for TSV.",
+    "Sort deterministically; encode long, normalized-colliding and five broader legacy-alias entities as compact Wiki references."
+  ],
+  "credits": [
+    "Wikidata contributors",
+    "Wikipedia and Wikimedia contributors",
+    "OtherWise public catalog selection and domain grouping"
+  ],
+  "domain_count": 23,
+  "domains": {
+    "Biology & nature": 4304,
+    "Chemistry & materials": 1022,
+    "Computing & information": 620,
+    "Earth & environment": 1028,
+    "Economics & organizations": 602,
+    "Engineering & transport": 2068,
+    "Food & agriculture": 883,
+    "Games & sports": 840,
+    "Geography & travel": 5009,
+    "Health & medicine": 1094,
+    "History & culture": 3094,
+    "Home & crafts": 431,
+    "Learning & language": 721,
+    "Literature & storytelling": 325,
+    "Mathematics": 1102,
+    "Mind & behavior": 224,
+    "Music & performance": 878,
+    "Philosophy": 240,
+    "Physics & astronomy": 2202,
+    "Politics & law": 1157,
+    "Religion & spirituality": 1139,
+    "Society & relationships": 1317,
+    "Visual arts & design": 619
+  },
+  "excluded_authored_topic_count": 718,
+  "format_version": 1,
+  "legacy_starter_meaning_collision_count": 5,
+  "legacy_starter_meaning_collision_reasons": {
+    "Q1081491": "Football includes multiple codes, rather than only the Soccer starter.",
+    "Q114397581": "Weightlifting denotes the sport/exercise, rather than generic Strength training.",
+    "Q189900": "Information security covers more than the Cybersecurity starter.",
+    "Q39162": "Open source includes practices beyond the Open-source software starter.",
+    "Q6607": "Guitar names the instrument, rather than the Playing guitar activity."
+  },
+  "license_urls": {
+    "labels_and_descriptions": "https://www.wikidata.org/wiki/Wikidata:Licensing",
+    "selection_and_grouping": "https://creativecommons.org/licenses/by-sa/4.0/"
+  },
+  "licenses": {
+    "labels_and_descriptions": "CC0-1.0",
+    "selection_and_grouping": "CC-BY-SA-4.0"
+  },
+  "list_revisions": {
+    "Wikipedia:Vital articles/Level 5/Arts/Audiovisual arts": 1378623156,
+    "Wikipedia:Vital articles/Level 5/Arts/Narrative arts": 1378623174,
+    "Wikipedia:Vital articles/Level 5/Biology and health sciences/Animals": 1378399197,
+    "Wikipedia:Vital articles/Level 5/Biology and health sciences/Biology": 1378657382,
+    "Wikipedia:Vital articles/Level 5/Biology and health sciences/Health": 1378657407,
+    "Wikipedia:Vital articles/Level 5/Biology and health sciences/Plants": 1377848560,
+    "Wikipedia:Vital articles/Level 5/Everyday life": 1378623203,
+    "Wikipedia:Vital articles/Level 5/Everyday life/Sports, games and recreation": 1378175751,
+    "Wikipedia:Vital articles/Level 5/Geography/Cities": 1378175764,
+    "Wikipedia:Vital articles/Level 5/Geography/Physical": 1377848615,
+    "Wikipedia:Vital articles/Level 5/Geography/Regions and countries": 1378175776,
+    "Wikipedia:Vital articles/Level 5/Geography/Technical": 1378175782,
+    "Wikipedia:Vital articles/Level 5/History": 1378657679,
+    "Wikipedia:Vital articles/Level 5/Mathematics": 1378657716,
+    "Wikipedia:Vital articles/Level 5/Philosophy and religion": 1378623302,
+    "Wikipedia:Vital articles/Level 5/Physical sciences/Astronomy": 1378623310,
+    "Wikipedia:Vital articles/Level 5/Physical sciences/Basics and measurement": 1378658068,
+    "Wikipedia:Vital articles/Level 5/Physical sciences/Chemistry": 1377818330,
+    "Wikipedia:Vital articles/Level 5/Physical sciences/Earth science": 1377419682,
+    "Wikipedia:Vital articles/Level 5/Physical sciences/Physics": 1377638300,
+    "Wikipedia:Vital articles/Level 5/Society and social sciences/Culture": 1378623335,
+    "Wikipedia:Vital articles/Level 5/Society and social sciences/Politics and economics": 1378441907,
+    "Wikipedia:Vital articles/Level 5/Society and social sciences/Social studies": 1378175917,
+    "Wikipedia:Vital articles/Level 5/Technology": 1378658261,
+    "Wikipedia:Vital articles/Level 5/Technology/Agriculture": 1377419735,
+    "Wikipedia:Vital articles/Level 5/Technology/Computing and communication": 1378658279,
+    "Wikipedia:Vital articles/Level 5/Technology/Optical, navigation and astronomical": 1377675104,
+    "Wikipedia:Vital articles/Level 5/Technology/Transportation": 1378175933,
+    "Wikipedia:Vital articles/Level 5/Technology/Weapons": 1378400455
+  },
+  "long_title_reference_count": 147,
+  "maximum_title_utf16_units": 79,
+  "normalized_title_collision_groups": 0,
+  "normalized_title_collision_record_count": 0,
+  "public_selection_urls": [
+    "https://en.wikipedia.org/wiki/Wikipedia:Vital_articles/Level/5",
+    "https://meta.wikimedia.org/wiki/List_of_articles_every_Wikipedia_should_have/Expanded"
+  ],
+  "reference_count": 152,
+  "reserved_reference_title_count": 0,
+  "snapshot_date": "2026-10-05",
+  "source_catalog_topic_count": 31637,
+  "sources": {
+    "data/README.md": {
+      "bytes": 6066,
+      "sha256": "f407be83cc8fa315ede6cb4f09310d1d8d97fe89ee1c63bc86106b9a3eca0699"
+    },
+    "data/catalog_metadata.json": {
+      "bytes": 4308,
+      "sha256": "2e194afccd0461a9bb43392e17dc1f9a2ff7565ba9d64b34a9b61724a528beb7"
+    },
+    "data/topics.json": {
+      "bytes": 21826579,
+      "sha256": "210e2d4a080a90cd0acbb7116dd547e1573971102c60651f728527c0df3a995f"
+    }
+  },
+  "topic_count": 30919
+}

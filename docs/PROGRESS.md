@@ -1,4 +1,15 @@
-# LinkMe2.1 complete and verified
+# LinkMe2.2 complete and verified
+
+- Repository `/Users/arthurfu/Documents/linkme`, dedicated branch `codex/wiki-interest-library`, base `243d5e6`.
+- OtherWise public Wiki snapshot:30,919 topics,23 fields; offline search, meanings, full details/source credits, native multi-select drafts and field filtering. Existing148 starters, custom text and profile/filter boundaries remain available.
+- All152 compact identities preserve long or broader meanings within the deployed16-interest/40-unit bounds; full labels resolve without loading the full index into Profile. Three public source-file hashes still match OtherWise; no OtherWise writes or personal-history import.
+- Final verification:67/67 JVM,13/13 importer,177/177 security,21/21 complete-suite device tests. Four final capture workflows pass for phone, font1.3, short landscape/font1.3 and tablet. Actual demo-backend Wiki reference save, recreation, cancellation, full-mix recovery and30919-item virtualization are covered.
+- Independent whole-change code/data review passes; independent rendered native review returns ship after45 captures, with no material fixes. PRODUCT/DESIGN/sidecar agree with implemented behavior; existing design tokens and10 HTML/CSS preview primitives are retained.
+- Normal debug and optimized unsigned release builds pass:2.2/code4, existing production Firebase project and emulators disabled. Debug signature, packaged topic/provenance bytes and APK hashes verified. Lint0 errors/21 warnings; see the integration review for advisory scope.
+- Existing free Spark backend, rule hash298b5b565ce300da32c0753bac087e004e7852030b089b4f54e2995460a97f8d and eight indexes unchanged. No production data writes, migration or deployment required.
+- Delivery: `artifacts/2.2/LinkMe-2.2-debug.apk`, unsigned release, SHA256SUMS,45 native captures and verification summary. Earlier2.0/2.1 artifacts retained. Local source checkpoint only; no push/store publication.
+
+# Previous LinkMe2.1 verified state
 
 - Repository `/Users/arthurfu/Documents/linkme`, dedicated branch `codex/interest-discovery`, base `edc028e`.
 -148-topic/12-group catalog,16 customizable interests, explicit local introduction/scene suggestions, saved drafts and separate discovery filters implemented.

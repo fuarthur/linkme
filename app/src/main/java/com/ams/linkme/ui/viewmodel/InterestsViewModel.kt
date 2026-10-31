@@ -69,6 +69,12 @@ class InterestsViewModel(private val saved: SavedStateHandle) : ViewModel() {
         emit()
     }
 
+    fun replaceMix(values: List<String>) {
+        saved["selectedInterests"] = ArrayList(InterestCatalog.normalize(values))
+        saved["query"] = ""
+        emit()
+    }
+
     fun remove(label: String) {
         saved["selectedInterests"] = ArrayList(state.value!!.selected.filterNot { same(it, label) })
         emit()

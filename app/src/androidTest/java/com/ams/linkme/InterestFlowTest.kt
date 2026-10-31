@@ -157,7 +157,10 @@ class InterestFlowTest {
         ActivityScenario.launch(MainActivity::class.java).use {
             waitFor { onView(withId(R.id.nav_profile)).check(matches(isDisplayed())) }
             onView(withId(R.id.nav_profile)).perform(click())
-            waitFor { onView(withId(R.id.profile_name)).check(matches(withText("Alex Morgan"))) }
+            waitFor {
+                onView(allOf(withId(R.id.profile_name), isDisplayed()))
+                    .check(matches(withText("Alex Morgan")))
+            }
             onView(withId(R.id.profile_interests)).perform(scrollTo(), click())
             onView(withId(R.id.interest_search)).perform(replaceText(custom), closeSoftKeyboard())
             onView(withId(R.id.interest_create)).perform(scrollTo(), click())

@@ -10,6 +10,7 @@ import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.ViewModelProvider
@@ -28,6 +29,33 @@ import com.google.android.material.chip.ChipGroup
 class InterestsActivity : AppCompatActivity() {
     private lateinit var model: InterestsViewModel
     private var syncing = false
+    private val wikiPicker =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK)
+                result.data?.getStringArrayListExtra("selectedInterests")?.let(model::replaceMix)
+        }
+
+    private fun openWiki() {
+        wikiPicker.launch(
+            Intent(this, WikiTopicsActivity::class.java)
+                .putStringArrayListExtra(
+                    "selectedInterests",
+                    ArrayList(model.state.value!!.selected),
+                )
+                .putExtra("initialQuery", model.state.value!!.query)
+        )
+    }
+
+    private fun wikiButton(search: Boolean = false) =
+        button(
+                getString(if (search) R.string.wiki_search_library else R.string.wiki_browse),
+                outlined = true,
+            )
+            .apply {
+                id = R.id.wiki_browse
+                space(top = 8)
+                setOnClickListener { openWiki() }
+            }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -181,6 +209,7 @@ class InterestsActivity : AppCompatActivity() {
                 )
             }
             body.addView(options)
+            body.addView(wikiButton(search = true))
             if (results.isEmpty())
                 body.addView(
                     label("Make it yours. Create a topic in your own words.", 14f, secondary = true)
@@ -237,6 +266,7 @@ class InterestsActivity : AppCompatActivity() {
                 setOnClickListener { model.explore() }
             }
         )
+        body.addView(wikiButton())
         val ideas = InterestCatalog.suggestions(state.selected, model.introduction, state.choices)
         if (ideas.isNotEmpty()) {
             heading(body, "Ideas to explore")

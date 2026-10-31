@@ -22,3 +22,7 @@ artifacts/
 
 /firebase-debug.log
 /firestore-debug.log
+
+# Local importer/test bytecode
+__pycache__/
+*.py[cod]

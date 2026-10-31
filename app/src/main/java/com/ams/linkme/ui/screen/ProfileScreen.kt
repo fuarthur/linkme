@@ -137,6 +137,12 @@ class ProfileScreen(
                     group.addView(
                         Chip(activity).apply {
                             text = Interests.label(tag)
+                            maxWidth =
+                                minOf(
+                                    activity.resources.displayMetrics.widthPixels,
+                                    activity.dp(720),
+                                ) - activity.dp(48)
+                            ellipsize = android.text.TextUtils.TruncateAt.END
                             minimumHeight = activity.dp(48)
                             setEnsureMinTouchTargetSize(true)
                             setOnClickListener { onEditInterests() }

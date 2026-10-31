@@ -365,7 +365,8 @@ object InterestCatalog {
         for (raw in values) {
             if (validateLabel(raw) != null) continue
             val clean = clean(raw)
-            val canonical = topicByName[fold(clean)]?.label ?: clean
+            val canonical =
+                WikiTopicReferences.canonical(clean) ?: topicByName[fold(clean)]?.label ?: clean
             result.putIfAbsent(fold(canonical), canonical)
             if (result.size == MAX_INTERESTS) break
         }
@@ -373,6 +374,9 @@ object InterestCatalog {
     }
 
     fun label(value: String): String {
+        WikiTopicReferences.label(clean(value))?.let {
+            return it
+        }
         val canonical = topicByName[fold(value)]?.label ?: clean(value)
         return when (canonical) {
             "Sport" -> "Sports"

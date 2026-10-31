@@ -5,4 +5,37 @@
         <item quantity="one">%1$d / %2$d selected</item>
         <item quantity="other">%1$d / %2$d selected</item>
     </plurals>
+
+    <string name="wiki_title">Wiki topics</string>
+    <string name="wiki_search">Search Wiki topics</string>
+    <string name="wiki_cancel">Cancel Wiki topic selection</string>
+    <string name="wiki_sources">Sources</string>
+    <string name="wiki_fields">Fields</string>
+    <string name="wiki_all_fields">All fields</string>
+    <string name="wiki_choose_field">Choose a field</string>
+    <string name="wiki_field_description">Choose a field, currently %1$s</string>
+    <plurals name="wiki_status">
+        <item quantity="one">%1$s · %2$,d topic · %3$d / 16 selected</item>
+        <item quantity="other">%1$s · %2$,d topics · %3$d / 16 selected</item>
+    </plurals>
+    <string name="wiki_loading">Loading the offline topic library…</string>
+    <string name="wiki_load_failed">Topic library could not load</string>
+    <string name="wiki_retry_help">Try loading the bundled library again, or go back to your interest mix.</string>
+    <string name="wiki_retry">Try again</string>
+    <string name="wiki_nothing_matched">Nothing matched</string>
+    <string name="wiki_empty_help">Try another title or field. This Wiki snapshot uses English titles; you can also go back to create an interest in your own words.</string>
+    <string name="wiki_mix_full">Your mix is full. Remove a topic here, or go back to edit your mix.</string>
+    <string name="wiki_info">Info</string>
+    <string name="wiki_about_topic">About %1$s</string>
+    <string name="wiki_topic_details">Topic details</string>
+    <string name="wiki_details">%1$s\n\n%2$s\n\nField: %3$s</string>
+    <string name="wiki_close">Close</string>
+    <string name="wiki_read_source">Read source</string>
+    <string name="wiki_browse">Browse Wiki topics</string>
+    <string name="wiki_search_library">Search the Wiki topic library</string>
+    <string name="wiki_sources_body">%1$,d English Wiki topics, packaged from OtherWise for offline use.\n\nNames and descriptions: Wikidata, CC0.\nhttps://www.wikidata.org/wiki/Wikidata:Licensing\n\nSelection and fields: Wikipedia and Wikimedia contributors, via OtherWise. The derived selection is shared under CC BY-SA 4.0. LinkMe adapts the data format and uses compact references for long or distinct meanings.\nhttps://creativecommons.org/licenses/by-sa/4.0/\n\nhttps://en.wikipedia.org/wiki/Wikipedia:Vital_articles/Level/5</string>
+    <plurals name="wiki_use_interests">
+        <item quantity="one">Use %1$d interest</item>
+        <item quantity="other">Use %1$d interests</item>
+    </plurals>
 </resources>

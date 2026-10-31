@@ -27,4 +27,14 @@
     <item name="interest_choice_three" type="id" />
     <item name="profile_interests" type="id" />
     <item name="discover_interests" type="id" />
+    <item name="wiki_search" type="id" />
+    <item name="wiki_results" type="id" />
+    <item name="wiki_fields" type="id" />
+    <item name="wiki_status" type="id" />
+    <item name="wiki_apply" type="id" />
+    <item name="wiki_feedback" type="id" />
+    <item name="wiki_retry" type="id" />
+    <item name="wiki_browse" type="id" />
+    <item name="wiki_sources" type="id" />
+    <item name="wiki_empty" type="id" />
 </resources>
