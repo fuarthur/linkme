@@ -1,0 +1,19 @@
+{
+  "name": "linkme-firebase-security-tests",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Local-only Firestore and Auth emulator regression tests",
+  "engines": {
+    "node": ">=24.12.0"
+  },
+  "scripts": {
+    "test": "firebase emulators:exec --only auth,firestore --project demo-linkme --config ../firebase.json \"node --test --test-concurrency=1 security.test.mjs\"",
+    "test:baseline": "LINKME_RULES_MODE=open npm test"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "6.0.0",
+    "firebase": "13.1.0",
+    "firebase-tools": "15.34.2"
+  }
+}

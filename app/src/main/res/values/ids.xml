@@ -1,0 +1,19 @@
+<resources>
+    <item name="nav_discover" type="id" />
+    <item name="nav_chats" type="id" />
+    <item name="nav_profile" type="id" />
+    <item name="email" type="id" />
+    <item name="password" type="id" />
+    <item name="password_confirmation" type="id" />
+    <item name="profile_name" type="id" />
+    <item name="profile_bio" type="id" />
+    <item name="message_draft" type="id" />
+    <item name="profile_save" type="id" />
+    <item name="send_message" type="id" />
+    <item name="auth_submit" type="id" />
+    <item name="people_list" type="id" />
+    <item name="inbox_list" type="id" />
+    <item name="chat_list" type="id" />
+    <item name="main_navigation" type="id" />
+    <item name="older_chats" type="id" />
+</resources>

@@ -2,85 +2,216 @@ package com.ams.linkme.ui.activity
 
 import android.content.Intent
 import android.os.Bundle
-
+import android.view.Gravity
 import android.view.View
-import android.widget.*
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.ams.linkme.R
-import com.ams.linkme.adapter.UserAdapter
+import com.ams.linkme.data.LinkMeRepository
 import com.ams.linkme.model.User
+import com.ams.linkme.ui.*
+import com.ams.linkme.ui.screen.DiscoverScreen
+import com.ams.linkme.ui.screen.InboxScreen
+import com.ams.linkme.ui.screen.ProfileScreen
+import com.ams.linkme.ui.viewmodel.InboxViewModel
 import com.ams.linkme.ui.viewmodel.MainViewModel
+import com.ams.linkme.ui.viewmodel.ProfileViewModel
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.navigation.NavigationBarView
+import com.google.android.material.navigationrail.NavigationRailView
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var linkButton: Button
-    private lateinit var interestText: TextView
-    private lateinit var mainViewModel: MainViewModel
-    private lateinit var selectedItem: String
-    private lateinit var btnProfile: Button
-
+    private val repo = LinkMeRepository.instance
+    private lateinit var inbox: InboxViewModel
+    private lateinit var discovery: MainViewModel
+    private lateinit var navigation: NavigationBarView
+    private var selected = R.id.nav_discover
+    private var visible = false
+    private var completingSetup = false
+    private val pages = mutableMapOf<Int, View>()
+    private val authListener =
+        FirebaseAuth.AuthStateListener { if (it.currentUser == null) openLogin() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        linkButton = findViewById(R.id.linkbutton)
-        interestText = findViewById(R.id.searchEditText)
-        btnProfile = findViewById(R.id.btnProfile)
-        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
-
-        val spinner: Spinner = findViewById(R.id.spinner)
-        val options = arrayOf("Sport", "Food", "Dating", "Games", "Music", "Anime", "Other") // 替换为你的选项列表
-        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, options)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapter
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                selectedItem = parent.getItemAtPosition(position).toString()
-            }
-
-            override fun onNothingSelected(p0: AdapterView<*>?) {
-                TODO("Not yet implemented")
-            }
+        if (repo.uid == null) {
+            openLogin()
+            return
         }
-        linkButton.setOnClickListener {
-            mainViewModel.link(selectedItem, object : MainViewModel.LinkCallback {
-                override fun onLinkResult(userList: List<User>) {
-                    handleUserList(userList)
-                    // Log.d("debug-annotation", userList.toString())
+        discovery = ViewModelProvider(this)[MainViewModel::class.java]
+        inbox = ViewModelProvider(this)[InboxViewModel::class.java]
+        val profile = ViewModelProvider(this)[ProfileViewModel::class.java]
+        selected = savedInstanceState?.getInt("tab", R.id.nav_discover) ?: R.id.nav_discover
+        completingSetup = savedInstanceState?.getBoolean("completingSetup") ?: false
+        val discoverScreen =
+            DiscoverScreen(this, discovery, ::openChat) { showTab(R.id.nav_profile) }
+        val inboxScreen =
+            InboxScreen(
+                this,
+                inbox,
+                { conversation ->
+                    openChat(
+                        conversation.profile
+                            ?: User(uid = conversation.peerUid, username = "LinkMe member")
+                    )
+                },
+            ) {
+                showTab(R.id.nav_discover)
+            }
+        val profileScreen =
+            ProfileScreen(this, profile) {
+                inbox.stop()
+                repo.signOut()
+                openLogin()
+            }
+        pages[R.id.nav_discover] = discoverScreen.view
+        pages[R.id.nav_chats] = inboxScreen.view
+        pages[R.id.nav_profile] = profileScreen.view
+        val content = ContentFrame(this)
+        pages.values.forEach {
+            content.addView(
+                it,
+                FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                ),
+            )
+        }
+        val center =
+            FrameLayout(this).apply {
+                addView(
+                    content,
+                    FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        Gravity.CENTER_HORIZONTAL,
+                    ),
+                )
+            }
+        val root = column()
+        root.addView(previewBanner())
+        if (resources.configuration.screenWidthDp >= 600) {
+            val horizontal = row()
+            navigation = NavigationRailView(this)
+            horizontal.addView(
+                navigation,
+                LinearLayout.LayoutParams(dp(88), ViewGroup.LayoutParams.MATCH_PARENT),
+            )
+            horizontal.addView(
+                center,
+                LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f),
+            )
+            root.addView(
+                horizontal,
+                LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f),
+            )
+        } else {
+            root.addView(
+                center,
+                LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f),
+            )
+            navigation = BottomNavigationView(this)
+            root.addView(navigation)
+        }
+        navigation.id = R.id.main_navigation
+        navigation.menu.add(0, R.id.nav_discover, 0, "Discover").setIcon(R.drawable.ic_discover)
+        navigation.menu.add(0, R.id.nav_chats, 1, "Chats").setIcon(R.drawable.ic_chat)
+        navigation.menu.add(0, R.id.nav_profile, 2, "Profile").setIcon(R.drawable.ic_profile)
+        navigation.setOnItemSelectedListener {
+            selectPage(it.itemId)
+            true
+        }
+        var savedSeen = profile.state.value?.saved ?: 0
+        var onboardingChecked = savedInstanceState?.getBoolean("onboardingChecked") ?: false
+        profile.state.observe(this) { state ->
+            state.profile?.let { user ->
+                discovery.useProfile(user)
+                if (!onboardingChecked) {
+                    onboardingChecked = true
+                    completingSetup = user.username.isBlank() || user.interests.isEmpty()
+                    if (completingSetup) showTab(R.id.nav_profile)
                 }
-            })
+            }
+            if (state.saved > savedSeen) {
+                savedSeen = state.saved
+                discovery.refresh()
+                Snackbar.make(root, "Profile saved", Snackbar.LENGTH_SHORT)
+                    .setAnchorView(navigation)
+                    .show()
+                if (completingSetup) {
+                    completingSetup = false
+                    showTab(R.id.nav_discover)
+                }
+            }
         }
+        mount(root, ime = true)
+        showTab(selected)
+        profile.load()
+    }
 
-        btnProfile.setOnClickListener {
-            navigateToProfileActivity()
+    private fun openChat(user: User) {
+        if (user.uid.isBlank() || user.uid == repo.uid) return
+        startActivity(
+            Intent(this, ChatActivity::class.java)
+                .putExtra("userId", user.uid)
+                .putExtra("username", user.username)
+                .putStringArrayListExtra(
+                    "sharedInterests",
+                    ArrayList(user.interests.filter { it in discovery.state.value!!.selected }),
+                )
+        )
+    }
+
+    private fun showTab(id: Int) {
+        if (::navigation.isInitialized && navigation.selectedItemId != id)
+            navigation.selectedItemId = id
+        else selectPage(id)
+    }
+
+    private fun selectPage(id: Int) {
+        selected = id
+        pages.forEach { (key, view) ->
+            view.visibility = if (key == id) View.VISIBLE else View.GONE
+        }
+        if (::inbox.isInitialized) {
+            if (id == R.id.nav_chats && visible) inbox.start() else inbox.stop()
         }
     }
 
-
-    private fun handleUserList(userList: List<User>) {
-        val shuffledList = userList.toMutableList()
-        shuffledList.shuffle()
-        // 获取RecyclerView视图组件
-        val recyclerView: RecyclerView = findViewById(R.id.userRecyclerView)
-
-        // 创建并设置适配器
-        val adapter = UserAdapter(shuffledList)
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(this)
+    override fun onStart() {
+        super.onStart()
+        visible = true
+        repo.auth.addAuthStateListener(authListener)
+        if (::inbox.isInitialized && selected == R.id.nav_chats) inbox.start()
+        if (::discovery.isInitialized && discovery.state.value?.searched == true)
+            discovery.refresh()
     }
 
-
-    private fun navigateToChatActivity() {
-        val intent = Intent(this@MainActivity, ChatActivity::class.java)
-        startActivity(intent)
-        finish()
+    override fun onStop() {
+        visible = false
+        repo.auth.removeAuthStateListener(authListener)
+        if (::inbox.isInitialized) inbox.stop()
+        super.onStop()
     }
 
-    private fun navigateToProfileActivity() {
-        val intent = Intent(this@MainActivity, ProfileActivity::class.java)
-        startActivity(intent)
+    override fun onSaveInstanceState(out: Bundle) {
+        out.putInt("tab", selected)
+        out.putBoolean("onboardingChecked", true)
+        out.putBoolean("completingSetup", completingSetup)
+        super.onSaveInstanceState(out)
+    }
+
+    private fun openLogin() {
+        if (isFinishing) return
+        startActivity(
+            Intent(this, LoginActivity::class.java)
+                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        )
         finish()
     }
 }

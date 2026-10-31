@@ -1,0 +1,169 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function owns(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function bounded(maximum) {
+      return request.query.limit != null && request.query.limit <= maximum;
+    }
+
+    function validUid(uid) {
+      return uid is string && uid.size() > 0 && uid.size() <= 128
+        && uid.matches('^[^/]+$');
+    }
+
+    function validMembers(members) {
+      return members is list && members.size() == 2
+        && validUid(members[0]) && validUid(members[1])
+        && members[0] != members[1];
+    }
+
+    function conversationKey(firstUid, secondUid) {
+      let first = firstUid < secondUid ? firstUid : secondUid;
+      let second = firstUid < secondUid ? secondUid : firstUid;
+      let key = string(first.size()) + ':' + first + string(second.size()) + ':' + second;
+      return hashing.sha256(key).toHexString().lower();
+    }
+
+    function validDocumentId(id) {
+      return id is string && id.size() > 0 && id.size() <= 512
+        && id.matches('^[^/]+$');
+    }
+
+    function freshMessageForSummary(data, conversationId) {
+      let messagePath = /databases/$(database)/documents/Messages/$(data.lastMessageId);
+      let message = getAfter(messagePath).data;
+      return !exists(messagePath)
+        && message.conversationId == conversationId
+        && validMembers(message.members) && message.members.toSet() == data.members.toSet()
+        && message.senderId == data.lastSenderId
+        && message.content == data.lastMessage
+        && message.timestamp == request.time;
+    }
+
+    function validText(text) {
+      // A multiline message must contain at least one non-whitespace character.
+      return text is string && text.size() > 0 && text.size() <= 2000
+        && text.matches('[\\s\\S]*[^\\s][\\s\\S]*');
+    }
+
+    function notBlocked(first, second) {
+      return !exists(/databases/$(database)/documents/Users/$(first)/Blocked/$(second))
+        && !exists(/databases/$(database)/documents/Users/$(second)/Blocked/$(first));
+    }
+
+    function validPublicProfile(data, uid) {
+      return data.keys().hasAll(['uid', 'username', 'bio', 'interests', 'discoverable', 'updatedAt'])
+        && data.keys().hasOnly(['uid', 'username', 'bio', 'interests', 'discoverable', 'updatedAt'])
+        && data.uid == uid
+        && data.username is string && data.username.size() >= 1 && data.username.size() <= 40
+        && data.bio is string && data.bio.size() <= 240
+        && data.interests is list && data.interests.size() >= 1 && data.interests.size() <= 8
+        && data.interests.toSet().size() == data.interests.size()
+        && data.interests.toSet().hasOnly(['Sport', 'Food', 'Dating', 'Games', 'Music', 'Anime', 'Movie', 'Other'])
+        && data.discoverable is bool
+        && data.updatedAt is timestamp && data.updatedAt == request.time;
+    }
+
+    function validChat(data, conversationId) {
+      return data.keys().hasAll(['members', 'lastMessage', 'lastSenderId', 'updatedAt', 'lastMessageId'])
+        && data.keys().hasOnly(['members', 'lastMessage', 'lastSenderId', 'updatedAt', 'lastMessageId'])
+        && validMembers(data.members)
+        && data.members[0] < data.members[1]
+        && conversationId == conversationKey(data.members[0], data.members[1])
+        && request.auth.uid in data.members
+        && data.lastSenderId == request.auth.uid
+        && validText(data.lastMessage)
+        && data.updatedAt is timestamp && data.updatedAt == request.time
+        && notBlocked(data.members[0], data.members[1])
+        && validDocumentId(data.lastMessageId)
+        && freshMessageForSummary(data, conversationId);
+    }
+
+    function matchingSummary(data, messageId) {
+      let summary = getAfter(/databases/$(database)/documents/Chats/$(data.conversationId)).data;
+      return summary.lastMessageId == messageId
+        && validMembers(summary.members)
+        && summary.members.toSet() == data.members.toSet()
+        && summary.lastSenderId == data.senderId
+        && summary.lastMessage == data.content
+        && summary.updatedAt == request.time;
+    }
+
+    function validMessage(data, messageId) {
+      return data.keys().hasAll(['senderId', 'receiveId', 'content', 'timestamp', 'conversationId', 'members'])
+        && data.keys().hasOnly(['senderId', 'receiveId', 'content', 'timestamp', 'conversationId', 'members'])
+        && data.senderId == request.auth.uid
+        && validUid(data.receiveId) && data.receiveId != request.auth.uid
+        && exists(/databases/$(database)/documents/PublicProfiles/$(data.receiveId))
+        && validText(data.content)
+        && data.timestamp is timestamp && data.timestamp == request.time
+        && validMembers(data.members)
+        && data.members.hasAll([data.senderId, data.receiveId])
+        && data.conversationId == conversationKey(data.senderId, data.receiveId)
+        && notBlocked(data.senderId, data.receiveId)
+        && matchingSummary(data, messageId);
+    }
+
+    function messageParticipant() {
+      return signedIn()
+        && (resource.data.senderId == request.auth.uid || resource.data.receiveId == request.auth.uid);
+    }
+
+    function chatParticipant() {
+      return signedIn() && request.auth.uid in resource.data.members;
+    }
+
+    // Legacy contact fields remain in this private owner-only document.
+    match /Users/{uid} {
+      allow get: if owns(uid);
+      allow list: if false;
+      allow create, update, delete: if owns(uid);
+
+      match /Blocked/{peerUid} {
+        allow get, list: if owns(uid);
+        allow create: if owns(uid) && validUid(peerUid) && peerUid != uid
+          && request.resource.data.keys().hasAll(['createdAt'])
+          && request.resource.data.keys().hasOnly(['createdAt'])
+          && request.resource.data.createdAt is timestamp
+          && request.resource.data.createdAt == request.time;
+        allow delete: if owns(uid);
+        allow update: if false;
+      }
+    }
+
+    match /PublicProfiles/{uid} {
+      allow get: if signedIn() && (owns(uid) || resource.data.discoverable == true);
+      allow list: if signedIn() && bounded(60) && resource.data.discoverable == true;
+      allow create, update: if owns(uid) && validPublicProfile(request.resource.data, uid);
+      allow delete: if false;
+    }
+
+    match /Messages/{messageId} {
+      // These checks intentionally also cover the original four-field messages.
+      allow get: if messageParticipant();
+      allow list: if bounded(100) && messageParticipant();
+      allow create: if signedIn() && validMessage(request.resource.data, messageId);
+      allow update, delete: if false;
+    }
+
+    match /Chats/{conversationId} {
+      allow get: if chatParticipant();
+      allow list: if bounded(100) && chatParticipant();
+      allow create: if signedIn() && validChat(request.resource.data, conversationId);
+      allow update: if signedIn() && validChat(request.resource.data, conversationId)
+        && request.resource.data.members == resource.data.members;
+      allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

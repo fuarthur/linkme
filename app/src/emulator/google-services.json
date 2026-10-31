@@ -1,0 +1,22 @@
+{
+  "project_info": {
+    "project_number": "1234567890",
+    "project_id": "demo-linkme"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1234567890:android:0123456789abcdef",
+        "android_client_info": {
+          "package_name": "com.ams.linkme"
+        }
+      },
+      "api_key": [
+        {
+          "current_key": "AIzaSyAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        }
+      ]
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,124 +1,220 @@
 package com.ams.linkme.ui.activity
 
+import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
+import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doAfterTextChanged
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ams.linkme.R
 import com.ams.linkme.adapter.MessageAdapter
-import com.ams.linkme.model.Message
-import com.google.android.gms.tasks.Tasks
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.ams.linkme.data.LinkMeRepository
+import com.ams.linkme.domain.Interests
+import com.ams.linkme.ui.*
+import com.ams.linkme.ui.viewmodel.ChatViewModel
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class ChatActivity : AppCompatActivity() {
-
-    private lateinit var currentUserId: String
-    private lateinit var targetUserId: String
-    private lateinit var firestore: FirebaseFirestore
-    private lateinit var auth: FirebaseAuth
-    private lateinit var editTextMessage: EditText
-    private lateinit var sendButton: Button
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var model: ChatViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_chat)
-
-        recyclerView = findViewById(R.id.recycler_view_chat)
-        auth = FirebaseAuth.getInstance()
-        currentUserId = auth.currentUser!!.uid
-        targetUserId = intent.getStringExtra("userId").toString()
-        firestore = Firebase.firestore
-        editTextMessage = findViewById(R.id.edit_text_message)
-        sendButton = findViewById(R.id.button_send)
-        sendButton.setOnClickListener {
-            val content = editTextMessage.text.toString()
-            if (content != "") {
-                send(content)
-            }
+        val repo = LinkMeRepository.instance
+        if (repo.uid == null) {
+            startActivity(
+                Intent(this, LoginActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            )
+            finish()
+            return
         }
-        updateUI()
-    }
-
-    private fun send(content: String) {
-        val postMap = hashMapOf<String, Any>()
-        postMap["content"] = content
-        postMap["senderId"] = currentUserId
-        postMap["receiveId"] = targetUserId
-        postMap["timestamp"] = com.google.firebase.Timestamp.now()
-        firestore.collection("Messages").add(postMap).addOnSuccessListener { documentReference ->
-            val delayMillis = 100
-            val handler = Handler(Looper.getMainLooper())
-            handler.postDelayed({
-                updateUI()
-                editTextMessage.text.clear()
-            }, delayMillis.toLong())
-        }.addOnFailureListener {
-            Toast.makeText(this, "Unknown error", Toast.LENGTH_LONG).show()
+        val peer = intent.getStringExtra("userId")
+        if (peer.isNullOrBlank() || peer == repo.uid) {
+            finish()
+            return
         }
-    }
-
-
-    private fun updateUI() {
-        recyclerView.layoutManager = LinearLayoutManager(this)
-
-        val query1 = firestore.collection("Messages")
-            .whereEqualTo("senderId", currentUserId)
-            .whereEqualTo("receiveId", targetUserId)
-            .orderBy("timestamp")
-            .get()
-
-        val query2 = firestore.collection("Messages")
-            .whereEqualTo("senderId", targetUserId)
-            .whereEqualTo("receiveId", currentUserId)
-            .orderBy("timestamp")
-            .get()
-
-        val combinedQuery = Tasks.whenAllSuccess<QuerySnapshot>(query1, query2)
-        combinedQuery.addOnSuccessListener { taskSnapshots ->
-
-            val messages = mutableListOf<Message>()
-
-            for (snapshot in taskSnapshots) {
-                val querySnapshot = snapshot as QuerySnapshot
-
-                for (document in querySnapshot) {
-                    val content = document.getString("content")
-                    val senderId = document.getString("senderId")
-                    val timestamp = document.getTimestamp("timestamp")?.toDate()?.time
-                    val message = Message(targetUserId, senderId, content, timestamp)
-                    messages.add(message)
+        model = ViewModelProvider(this)[ChatViewModel::class.java]
+        model.peer = peer
+        model.peerName =
+            intent.getStringExtra("username")?.ifBlank { "LinkMe member" } ?: "LinkMe member"
+        if (model.draft.isEmpty()) model.draft = savedInstanceState?.getString("draft").orEmpty()
+        val root = column()
+        root.addView(previewBanner())
+        val toolbar =
+            MaterialToolbar(this).apply {
+                title = model.peerName
+                subtitle = "A little common ground goes a long way."
+                setNavigationIcon(R.drawable.ic_back)
+                navigationContentDescription = "Back to LinkMe"
+                setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
+                menu
+                    .add("Conversation options")
+                    .setIcon(R.drawable.ic_more)
+                    .setShowAsAction(android.view.MenuItem.SHOW_AS_ACTION_ALWAYS)
+                setOnMenuItemClickListener {
+                    val blocked = model.state.value!!.blocked
+                    MaterialAlertDialogBuilder(this@ChatActivity)
+                        .setTitle(
+                            if (blocked) "Unblock ${model.peerName}?"
+                            else "Block ${model.peerName}?"
+                        )
+                        .setMessage(
+                            if (blocked) "You will be able to message each other again."
+                            else
+                                "You will not be able to send each other new messages. Your chat history will be kept."
+                        )
+                        .setNegativeButton("Cancel", null)
+                        .setPositiveButton(if (blocked) "Unblock" else "Block") { _, _ ->
+                            model.toggleBlock()
+                        }
+                        .show()
+                    true
                 }
             }
-
-            // 对消息列表按照时间戳进行排序
-            messages.sortBy { it.timestamp }
-
-            // 获取RecyclerView视图组件
-            val recyclerView: RecyclerView = findViewById(R.id.recycler_view_chat)
-
-            // 创建并设置适配器
-            val adapter = MessageAdapter(messages)
-            recyclerView.adapter = adapter
-
-            // 滚动到最后一条消息
-            recyclerView.scrollToPosition(messages.size - 1)
+        root.addView(toolbar)
+        val stateText =
+            label("", 13f, secondary = true).apply {
+                setPadding(dp(24), dp(8), dp(24), dp(8))
+                accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
+            }
+        root.addView(stateText)
+        val retry =
+            button("Try again", textOnly = true).apply { setOnClickListener { model.retry() } }
+        root.addView(retry)
+        val older =
+            button("Load earlier messages", textOnly = true).apply {
+                setOnClickListener { model.loadOlder() }
+            }
+        root.addView(older)
+        val progress = spinner()
+        root.addView(progress)
+        val welcome = column(24)
+        welcome.addView(label("Start with common ground", 24f, true))
+        welcome.addView(
+            label("A simple hello can turn into a good conversation.", 16f, secondary = true)
+                .apply { space(top = 10) }
+        )
+        val shared = intent.getStringArrayListExtra("sharedInterests").orEmpty()
+        val prompt =
+            button(
+                    if (shared.isNotEmpty()) "Ask about ${Interests.label(shared.first())}"
+                    else "Break the ice",
+                    outlined = true,
+                )
+                .apply { space(top = 16) }
+        welcome.addView(prompt)
+        root.addView(welcome)
+        val list =
+            RecyclerView(this).apply {
+                id = R.id.chat_list
+                layoutManager = LinearLayoutManager(this@ChatActivity).apply { stackFromEnd = true }
+                clipToPadding = false
+                setPadding(0, dp(12), 0, dp(12))
+            }
+        val messages = MessageAdapter(model.currentUid)
+        list.adapter = messages
+        root.addView(list, LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1f))
+        val composer =
+            row().apply {
+                setPadding(dp(16), dp(8), dp(16), dp(8))
+                setBackgroundColor(color(R.color.surface))
+            }
+        val (box, editor) = field("Message", R.id.message_draft, multiline = true)
+        editor.minLines = 1
+        editor.maxLines = 5
+        editor.filters = arrayOf(android.text.InputFilter.LengthFilter(2000))
+        editor.setText(model.draft)
+        composer.addView(box, LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f))
+        val send =
+            button("Send").apply {
+                id = R.id.send_message
+                contentDescription = "Send message"
+                layoutParams =
+                    LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                            ViewGroup.LayoutParams.WRAP_CONTENT,
+                        )
+                        .apply { marginStart = dp(8) }
+                setOnClickListener { model.send() }
+            }
+        composer.addView(send)
+        root.addView(composer)
+        editor.doAfterTextChanged {
+            model.draft = it.toString()
+            send.isEnabled =
+                model.draft.isNotBlank() &&
+                    !model.state.value!!.sending &&
+                    !model.state.value!!.blocked
         }
-
-        combinedQuery.addOnFailureListener { exception ->
-            Toast.makeText(this, "Failed to fetch messages: ${exception.message}", Toast.LENGTH_SHORT).show()
+        prompt.setOnClickListener {
+            editor.setText(
+                if (shared.isNotEmpty())
+                    "Hey ${model.peerName}, what do you enjoy most about ${Interests.label(shared.first()).lowercase()}?"
+                else "Hey ${model.peerName}, what have you been into lately?"
+            )
+            editor.setSelection(editor.length())
+            editor.requestFocus()
         }
-
+        var completed = model.state.value!!.completed
+        model.state.observe(this) { state ->
+            progress.visibility = if (state.loading) View.VISIBLE else View.GONE
+            welcome.visibility =
+                if (!state.loading && state.messages.isEmpty() && state.error == null) View.VISIBLE
+                else View.GONE
+            stateText.text =
+                when {
+                    state.blocked ->
+                        "You blocked this person. Unblock them from the menu to send a message."
+                    state.error != null -> state.error
+                    state.offline -> "Syncing messages…"
+                    else -> ""
+                }
+            stateText.visibility = if (stateText.text.isBlank()) View.GONE else View.VISIBLE
+            stateText.setTextColor(
+                color(if (state.error != null) R.color.error else R.color.on_surface_variant)
+            )
+            retry.visibility = if (state.error != null) View.VISIBLE else View.GONE
+            older.visibility = if (state.hasOlder) View.VISIBLE else View.GONE
+            older.isEnabled = !state.loadingOlder
+            older.text =
+                if (state.loadingOlder) "Loading…"
+                else if (state.hasGap) "Load missed messages" else "Load earlier messages"
+            send.text = if (state.sending) "Sending…" else "Send"
+            send.isEnabled = !state.sending && !state.blocked && model.draft.isNotBlank()
+            editor.isEnabled = !state.blocked
+            if (state.completed > completed) {
+                completed = state.completed
+                if (editor.text.toString() != model.draft) {
+                    editor.setText(model.draft)
+                    editor.setSelection(editor.length())
+                }
+            }
+            val wasAtBottom = !list.canScrollVertically(1)
+            messages.submitList(state.messages) {
+                if (wasAtBottom && state.messages.isNotEmpty() && !state.loadingOlder)
+                    list.scrollToPosition(state.messages.lastIndex)
+            }
+        }
+        mount(root, ime = true)
     }
 
-}
+    override fun onStart() {
+        super.onStart()
+        if (::model.isInitialized) model.start()
+    }
 
+    override fun onStop() {
+        if (::model.isInitialized) model.stop()
+        super.onStop()
+    }
+
+    override fun onSaveInstanceState(out: Bundle) {
+        if (::model.isInitialized) out.putString("draft", model.draft)
+        super.onSaveInstanceState(out)
+    }
+}

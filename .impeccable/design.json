@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-31T04:08:33Z",
+  "title": "Design System: LinkMe",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Purple primary — light"
+      },
+      "primary-dark": {
+        "role": "primary",
+        "displayName": "Purple primary — dark"
+      },
+      "secondary": {
+        "role": "secondary",
+        "displayName": "Green secondary — light"
+      },
+      "secondary-dark": {
+        "role": "secondary",
+        "displayName": "Green secondary — dark"
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Surface — light"
+      },
+      "surface-dark": {
+        "role": "neutral",
+        "displayName": "Surface — dark"
+      }
+    },
+    "typographyMeta": {
+      "auth-title": {
+        "displayName": "Auth title",
+        "purpose": "Authentication heading; medium face."
+      },
+      "screen-title": {
+        "displayName": "Screen title",
+        "purpose": "Discover, Chats and Your profile headings; medium face."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Native label/input/message body text. Label helper adds 2dp line spacing at multiplier 1.0."
+      },
+      "preview": {
+        "displayName": "Preview",
+        "purpose": "Debug-only sample-data banner."
+      },
+      "timestamp": {
+        "displayName": "Timestamp",
+        "purpose": "Message time or pending-send status."
+      }
+    },
+    "shadows": [
+      {
+        "name": "people-card-elevation",
+        "value": "0dp",
+        "purpose": "PeopleAdapter explicitly sets MaterialCardView.cardElevation = 0f; other controls retain native theme behavior."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "navigation-rail",
+        "value": "600dp"
+      },
+      {
+        "name": "compact-discovery-height",
+        "value": "screenHeightDp / fontScale < 600",
+        "purpose": "Use one horizontal chip row and 16dp header padding to keep people reachable."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Filled button — native preview",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Preview only at 1dp ≈ 1 CSS px and 1sp ≈ 1 CSS px; native source is authoritative. Ui.kt button(): minimum height 52dp, corner 16dp; native Material typography, ripple and states are inherited.",
+      "html": "<p class=\"ds-preview-note\">Native Android preview · not production source</p><button class=\"ds-preview-stage ds-primary\">Save profile</button>",
+      "css": ".ds-preview-note{font:12px sans-serif;color:#625C6A;margin:0 0 8px}.ds-preview-stage{font-family:sans-serif;color:#231F29}.ds-preview-stage:focus-visible,.ds-preview-stage button:focus-visible,.ds-preview-stage input:focus-visible{outline:auto}.ds-primary{display:block;width:100%;min-height:52px;border:0;border-radius:16px;background:#5940A8;color:#FFFFFF;font:inherit}.ds-primary:hover{cursor:pointer}@media(prefers-color-scheme:dark){.ds-primary{background:#D0BCFF;color:#30204F}}"
+    },
+    {
+      "name": "Outlined button — native preview",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Preview only at 1dp ≈ 1 CSS px and 1sp ≈ 1 CSS px; native source is authoritative. Ui.kt outlined=true; outline below is a browser translation of the inherited Material outlined style.",
+      "html": "<p class=\"ds-preview-note\">Native Android preview · not production source</p><button class=\"ds-preview-stage ds-outline\">Say hello</button>",
+      "css": ".ds-preview-note{font:12px sans-serif;color:#625C6A;margin:0 0 8px}.ds-preview-stage{font-family:sans-serif;color:#231F29}.ds-preview-stage:focus-visible,.ds-preview-stage button:focus-visible,.ds-preview-stage input:focus-visible{outline:auto}.ds-outline{display:block;width:100%;min-height:52px;border:1px solid #7C7485;border-radius:16px;background:transparent;color:#5940A8;font:inherit}.ds-outline:hover{cursor:pointer}@media(prefers-color-scheme:dark){.ds-outline{color:#D0BCFF;border-color:#968D9E}}"
+    },
+    {
+      "name": "Text button — native preview",
+      "kind": "button",
+      "refersTo": "button-text",
+      "description": "Preview only at 1dp ≈ 1 CSS px and 1sp ≈ 1 CSS px; native source is authoritative. Ui.kt textOnly=true, with inherited native borderlessButtonStyle.",
+      "html": "<p class=\"ds-preview-note\">Native Android preview · not production source</p><button class=\"ds-preview-stage ds-text\">Sign out</button>",
+      "css": ".ds-preview-note{font:12px sans-serif;color:#625C6A;margin:0 0 8px}.ds-preview-stage{font-family:sans-serif;color:#231F29}.ds-preview-stage:focus-visible,.ds-preview-stage button:focus-visible,.ds-preview-stage input:focus-visible{outline:auto}.ds-text{display:block;width:100%;min-height:52px;border:0;border-radius:16px;background:transparent;color:#5940A8;font:inherit}.ds-text:hover{cursor:pointer}@media(prefers-color-scheme:dark){.ds-text{color:#D0BCFF}}"
+    },
+    {
+      "name": "Outlined field — native preview",
+      "kind": "input",
+      "refersTo": "field-outlined",
+      "description": "Preview only at 1dp ≈ 1 CSS px and 1sp ≈ 1 CSS px; native source is authoritative. Ui.kt field(): outlined box, 14dp corners, 56dp editor minimum height, 16sp text and 16dp editor padding. Floating label/error rendering remains native.",
+      "html": "<p class=\"ds-preview-note\">Native Android preview · not production source</p><label class=\"ds-preview-stage ds-field\"><span>Display name</span><input aria-label=\"Display name\" value=\"Alex\" /></label>",
+      "css": ".ds-preview-note{font:12px sans-serif;color:#625C6A;margin:0 0 8px}.ds-preview-stage{font-family:sans-serif;color:#231F29}.ds-preview-stage:focus-visible,.ds-preview-stage button:focus-visible,.ds-preview-stage input:focus-visible{outline:auto}.ds-field{display:block;font-family:sans-serif;color:#231F29}.ds-field span{display:block}.ds-field input{display:block;width:100%;min-height:56px;padding:16px;border:1px solid #7C7485;border-radius:14px;background:#FCFAFF;color:#231F29;font:16px sans-serif}@media(prefers-color-scheme:dark){.ds-field,.ds-field input{color:#EAE2EF}.ds-field input{background:#17131C;border-color:#968D9E}}"
+    },
+    {
+      "name": "Interest filter — native preview",
+      "kind": "chip",
+      "description": "Preview only at 1dp ≈ 1 CSS px and 1sp ≈ 1 CSS px; native source is authoritative. DiscoverScreen/ProfileScreen use checkable Chip controls, minimum height 48dp, group gaps 8dp horizontally/4dp vertically. Native chip geometry and selected state are inherited.",
+      "html": "<p class=\"ds-preview-note\">Native Android preview · not production source</p><label class=\"ds-preview-stage ds-chip\"><input type=\"checkbox\" checked />Music</label>",
+      "css": ".ds-preview-note{font:12px sans-serif;color:#625C6A;margin:0 0 8px}.ds-preview-stage{font-family:sans-serif;color:#231F29}.ds-preview-stage:focus-visible,.ds-preview-stage button:focus-visible,.ds-preview-stage input:focus-visible{outline:auto}.ds-chip{display:inline-flex;align-items:center;gap:8px;min-height:48px;font-family:sans-serif}.ds-chip input{accent-color:#5940A8}.ds-chip:hover{cursor:pointer}@media(prefers-color-scheme:dark){.ds-chip{color:#EAE2EF}.ds-chip input{accent-color:#D0BCFF}}"
+    },
+    {
+      "name": "Person card — native preview",
+      "kind": "card",
+      "refersTo": "people-card",
+      "description": "Preview only at 1dp ≈ 1 CSS px and 1sp ≈ 1 CSS px; native source is authoritative. PeopleAdapter: 16dp radius, 20dp padding, 1dp outline-variant stroke and zero elevation; sample words are preview content.",
+      "html": "<p class=\"ds-preview-note\">Native Android preview · not production source</p><article class=\"ds-preview-stage ds-person\"><strong>Alex</strong><p>You both enjoy Music</p></article>",
+      "css": ".ds-preview-note{font:12px sans-serif;color:#625C6A;margin:0 0 8px}.ds-preview-stage{font-family:sans-serif;color:#231F29}.ds-preview-stage:focus-visible,.ds-preview-stage button:focus-visible,.ds-preview-stage input:focus-visible{outline:auto}.ds-person{padding:20px;border:1px solid #D1C9DA;border-radius:16px;background:#FCFAFF;color:#231F29;box-shadow:none;font-family:sans-serif}.ds-person strong{font-family:sans-serif;font-weight:500;font-size:20px}.ds-person p{color:#5940A8;font-size:14px}@media(prefers-color-scheme:dark){.ds-person{background:#17131C;color:#EAE2EF;border-color:#4A4352}.ds-person p{color:#D0BCFF}}"
+    },
+    {
+      "name": "Main navigation — native preview",
+      "kind": "nav",
+      "description": "Preview only at 1dp ≈ 1 CSS px and 1sp ≈ 1 CSS px; native source is authoritative. MainActivity: Discover, Chats and Profile; bottom bar below 600dp and an 88dp rail at or above 600dp. Layout/palette only; native Material indicators and states remain authoritative.",
+      "html": "<p class=\"ds-preview-note\">Native Android preview · not production source</p><nav class=\"ds-preview-stage ds-nav\" aria-label=\"LinkMe\"><button aria-current=\"page\"><svg aria-hidden=\"true\" viewBox=\"0 0 24 24\"><path d=\"M12,3a9,9 0,1 0,0 18a9,9 0,0 0,0 -18M16.5,7.5l-3,6 -6,3 3,-6z\" /></svg>Discover</button><button><svg aria-hidden=\"true\" viewBox=\"0 0 24 24\"><path d=\"M4,4h16v12H9l-5,4zM8,8h8M8,12h5\" /></svg>Chats</button><button><svg aria-hidden=\"true\" viewBox=\"0 0 24 24\"><path d=\"M16,7a4,4 0,1 1,-8 0a4,4 0,0 1,8 0M4,21v-2a8,6 0,0 1,16 0v2\" /></svg>Profile</button></nav>",
+      "css": ".ds-preview-note{font:12px sans-serif;color:#625C6A;margin:0 0 8px}.ds-preview-stage{font-family:sans-serif;color:#231F29}.ds-preview-stage:focus-visible,.ds-preview-stage button:focus-visible,.ds-preview-stage input:focus-visible{outline:auto}.ds-nav{display:flex;background:#FCFAFF;color:#231F29}.ds-nav button{flex:1;border:0;background:transparent;color:inherit;font-family:sans-serif}.ds-nav svg{display:block;width:24px;height:24px;margin:auto;fill:currentColor}.ds-nav button[aria-current]{background:#D7E8CF}.ds-nav button:hover{cursor:pointer}@media(min-width:600px){.ds-nav{flex-direction:column;width:88px}}@media(prefers-color-scheme:dark){.ds-nav{background:#17131C;color:#EAE2EF}.ds-nav button[aria-current]{background:#3C4B39}}"
+    },
+    {
+      "name": "Initial avatar — native preview",
+      "kind": "custom",
+      "refersTo": "avatar",
+      "description": "Preview only at 1dp ≈ 1 CSS px and 1sp ≈ 1 CSS px; native source is authoritative. Ui.kt avatar(): oval 52dp square by default, 19sp medium initials; production derives initials from the name.",
+      "html": "<p class=\"ds-preview-note\">Native Android preview · not production source</p><span class=\"ds-preview-stage ds-avatar\" aria-hidden=\"true\">AM</span>",
+      "css": ".ds-preview-note{font:12px sans-serif;color:#625C6A;margin:0 0 8px}.ds-preview-stage{font-family:sans-serif;color:#231F29}.ds-preview-stage:focus-visible,.ds-preview-stage button:focus-visible,.ds-preview-stage input:focus-visible{outline:auto}.ds-avatar{display:inline-flex;align-items:center;justify-content:center;width:52px;height:52px;border-radius:50%;background:#E9DFFF;color:#291352;font:500 19px sans-serif}@media(prefers-color-scheme:dark){.ds-avatar{background:#43316A;color:#E9DFFF}}"
+    },
+    {
+      "name": "Sent message — native preview",
+      "kind": "custom",
+      "refersTo": "message-sent",
+      "description": "Preview only at 1dp ≈ 1 CSS px and 1sp ≈ 1 CSS px; native source is authoritative. MessageAdapter: 18dp corner, 14dp padding, 16sp content; end aligned in native chat. Text and time here are preview content.",
+      "html": "<p class=\"ds-preview-note\">Native Android preview · not production source</p><div class=\"ds-preview-stage ds-sent\">Hello!<small>10:30 AM</small></div>",
+      "css": ".ds-preview-note{font:12px sans-serif;color:#625C6A;margin:0 0 8px}.ds-preview-stage{font-family:sans-serif;color:#231F29}.ds-preview-stage:focus-visible,.ds-preview-stage button:focus-visible,.ds-preview-stage input:focus-visible{outline:auto}.ds-sent{display:inline-block;padding:14px;border-radius:18px;background:#5940A8;color:#FFFFFF;font:16px sans-serif}.ds-sent small{display:block;margin-top:5px;font-size:11px}@media(prefers-color-scheme:dark){.ds-sent{background:#D0BCFF;color:#30204F}}"
+    },
+    {
+      "name": "Received message — native preview",
+      "kind": "custom",
+      "refersTo": "message-received",
+      "description": "Preview only at 1dp ≈ 1 CSS px and 1sp ≈ 1 CSS px; native source is authoritative. MessageAdapter: same geometry as sent messages, using surface_container/on_surface and start alignment.",
+      "html": "<p class=\"ds-preview-note\">Native Android preview · not production source</p><div class=\"ds-preview-stage ds-received\">What are you listening to?<small>10:31 AM</small></div>",
+      "css": ".ds-preview-note{font:12px sans-serif;color:#625C6A;margin:0 0 8px}.ds-preview-stage{font-family:sans-serif;color:#231F29}.ds-preview-stage:focus-visible,.ds-preview-stage button:focus-visible,.ds-preview-stage input:focus-visible{outline:auto}.ds-received{display:inline-block;padding:14px;border-radius:18px;background:#F1EDF7;color:#231F29;font:16px sans-serif}.ds-received small{display:block;margin-top:5px;color:#625C6A;font-size:11px}@media(prefers-color-scheme:dark){.ds-received{background:#26212D;color:#EAE2EF}.ds-received small{color:#CCC3D4}}"
+    }
+  ],
+  "narrative": {
+    "overview": "LinkMe keeps its original purple identity in a native Android interface built with Kotlin Views and Material 3. Its mode is Operate: people select shared interests, read profiles, send messages and maintain their own profile using familiar Android controls.\n\nThe implementation uses paired light/dark resource colors, system sans text, rounded controls and mostly flat content surfaces. This document captures the current source; it introduces no new brand metaphor, audience restriction or product claim. PRODUCT.md supplies the product and privacy constraints.",
+    "keyCharacteristics": [
+      "Original purple primary roles, with separate light and dark palettes.",
+      "Native Material buttons, outlined fields, chips, toolbar and adaptive navigation.",
+      "Initial avatars, visible shared-interest text and real conversation content.",
+      "System font scaling, scrollable forms and system/keyboard inset handling."
+    ],
+    "rules": [],
+    "dos": [
+      "Do use Theme.LinkMe and the paired resource color roles for light and dark UI.",
+      "Do keep geometry in dp, text in sp and the existing system/keyboard inset handling.",
+      "Do reuse the native Ui.kt helpers and Material controls for new screens.",
+      "Do show saved or sent success after backend acknowledgement, with an explicit failure or retry state.",
+      "Do label local sample data with the implemented Local preview · sample data banner."
+    ],
+    "donts": [
+      "Don’t expose private email or phone details in discovery cards.",
+      "Don’t invent match percentages, proximity, verification, online status or activity counts.",
+      "Don’t replace the original purple identity or system font without an updated brief.",
+      "Don’t treat the sidecar’s HTML/CSS previews as Android production source."
+    ]
+  }
+}
