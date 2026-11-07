@@ -1,10 +1,10 @@
 package com.ams.linkme.model
 
-data class User (
-    val username: String? = null,
-    val email: String? = null,
-    val gender: String? = null,
-    val phone: String? = null,
-    val interests: ArrayList<String>? = null,
-    val uid: String? = null
+/** Public, deliberately contact-free profile. Identity always comes from the document path. */
+data class User(
+    val uid: String = "",
+    val username: String = "",
+    val bio: String = "",
+    val interests: List<String> = emptyList(),
+    val discoverable: Boolean = false,
 )

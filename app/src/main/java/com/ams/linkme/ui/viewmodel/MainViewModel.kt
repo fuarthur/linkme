@@ -1,47 +1,92 @@
 package com.ams.linkme.ui.viewmodel
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.ams.linkme.data.LinkMeRepository
+import com.ams.linkme.data.userMessage
+import com.ams.linkme.domain.LinkMeLogic
 import com.ams.linkme.model.User
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldPath
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
-import java.util.*
+
+data class DiscoveryState(
+    val loading: Boolean = false,
+    val people: List<User> = emptyList(),
+    val selected: List<String> = emptyList(),
+    val error: String? = null,
+    val searched: Boolean = false,
+)
 
 class MainViewModel : ViewModel() {
-    private lateinit var firestore: FirebaseFirestore
+    private val repo = LinkMeRepository.instance
+    val state = MutableLiveData(DiscoveryState())
+    private var generation = 0
+    private var manualFilters = false
 
-    interface LinkCallback {
-        fun onLinkResult(userList: List<User>)
+    fun useProfile(user: User) {
+        if (!manualFilters && user.interests.isNotEmpty()) applySelection(user.interests)
     }
 
-    fun link(interest: String, callback: LinkCallback) {
-        firestore = Firebase.firestore
-        val userList = mutableListOf<User>()
+    fun select(interests: List<String>) {
+        manualFilters = true
+        applySelection(interests)
+    }
 
-        // 获取登录用户的UID
-        val auth = FirebaseAuth.getInstance()
-        val currentUserUid = auth.currentUser?.uid
+    private fun applySelection(interests: List<String>) {
+        val values = com.ams.linkme.domain.InterestCatalog.normalize(interests)
+        if (state.value!!.selected == values && (state.value!!.searched || state.value!!.loading))
+            return
+        state.value = state.value!!.copy(selected = values)
+        refresh()
+    }
 
-        firestore.collection("Users")
-            .whereArrayContains("interests", interest)
-            .whereNotEqualTo(FieldPath.documentId(), currentUserUid)
-            .limit(100)
-            .get()
-            .addOnSuccessListener { querySnapshot ->
-                for (document in querySnapshot) {
-                    val username = document.getString("username")
-                    val email = document.getString("email")
-                    val gender = document.getString("gender")
-                    val phone = document.getString("phone")
-                    val interests = document.get("interests") as? ArrayList<String>
-                    val uid = document.getString("uid")
-                    val user = User(username, email, gender, phone, interests, uid)
-                    userList.add(user)
-                }
-                callback.onLinkResult(userList)
-            }
+    fun refresh() {
+        val selected = state.value!!.selected
+        val request = ++generation
+        if (selected.isEmpty()) {
+            state.value = DiscoveryState(selected = selected)
+            return
+        }
+        state.value = DiscoveryState(loading = true, selected = selected)
+        repo.blocked { blocked ->
+            if (request != generation) return@blocked
+            blocked.fold(
+                { excluded ->
+                    repo.discover(selected) { result ->
+                        if (request != generation) return@discover
+                        state.value =
+                            result.fold(
+                                {
+                                    DiscoveryState(
+                                        people =
+                                            LinkMeLogic.rankProfiles(
+                                                    it,
+                                                    repo.uid.orEmpty(),
+                                                    selected,
+                                                    excluded,
+                                                )
+                                                .take(60),
+                                        selected = selected,
+                                        searched = true,
+                                    )
+                                },
+                                {
+                                    DiscoveryState(
+                                        selected = selected,
+                                        error = it.userMessage(),
+                                        searched = true,
+                                    )
+                                },
+                            )
+                    }
+                },
+                {
+                    state.value =
+                        DiscoveryState(
+                            selected = selected,
+                            error = it.userMessage(),
+                            searched = true,
+                        )
+                },
+            )
+        }
     }
 }
-

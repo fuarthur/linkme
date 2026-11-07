@@ -1,40 +1,41 @@
 <resources>
-    <string name="app_name" translatable="false">Link Me</string>
-    <string name="username">username</string>
-    <string name="password">password</string>
-    <string name="login">Login</string>
-    <string name="register">Register</string>
-    <string name="repeatPassword">Repeat Password</string>
-    <string name="link">Link</string>
-    <string name="chat">Chat</string>
-    <string name="profile">Profile</string>
-    <string name="back">&lt;</string>
-    <string name="male">Male</string>
-    <string name="Picture_hint">change picture</string>
-    <string name="sports">Sports</string>
-    <string name="submit">Submit</string>
-    <string name="food">Food</string>
-    <string name="dating">Dating</string>
-    <string name="games">Games</string>
-    <string name="music">Music</string>
-    <string name="anime">Anime</string>
-    <string name="movie">Movie</string>
-    <string name="select_your_interests">Select your interests</string>
-    <string name="phone">Phone</string>
-    <string name="female">Female</string>
-    <string name="name">Name</string>
-    <string name="other">Other</string>
-    <string name="email">email</string>
-    <string name="message_hint">Enter your message</string>
-    <string name="send">Send</string>
-    <string name="link_button">LINK ME!</string>
-    <string name="user_information">User Information</string>
-    <string name="link_hint">Select the interests \n you want to link to</string>
-    <string name="username_placeholder">Username: %s</string>
-    <string name="email_placeholder">Email: %s</string>
-    <string name="gender_placeholder">Gender: %s</string>
-    <string name="phone_placeholder">Phone: %s</string>
-    <string name="interests_placeholder">Interests: %s</string>
-    <string name="sample_receive_message">This is receive message</string>
-    <string name="sample_sent_message">This is sent message</string>
+    <string name="app_name" translatable="false">LinkMe</string>
+    <string name="bio_hint">A favorite artist, a weekend ritual, something to talk about.</string>
+    <plurals name="interests_selected_count">
+        <item quantity="one">%1$d / %2$d selected</item>
+        <item quantity="other">%1$d / %2$d selected</item>
+    </plurals>
+
+    <string name="wiki_title">Wiki topics</string>
+    <string name="wiki_search">Search Wiki topics</string>
+    <string name="wiki_cancel">Cancel Wiki topic selection</string>
+    <string name="wiki_sources">Sources</string>
+    <string name="wiki_fields">Fields</string>
+    <string name="wiki_all_fields">All fields</string>
+    <string name="wiki_choose_field">Choose a field</string>
+    <string name="wiki_field_description">Choose a field, currently %1$s</string>
+    <plurals name="wiki_status">
+        <item quantity="one">%1$s · %2$,d topic · %3$d / 16 selected</item>
+        <item quantity="other">%1$s · %2$,d topics · %3$d / 16 selected</item>
+    </plurals>
+    <string name="wiki_loading">Loading the offline topic library…</string>
+    <string name="wiki_load_failed">Topic library could not load</string>
+    <string name="wiki_retry_help">Try loading the bundled library again, or go back to your interest mix.</string>
+    <string name="wiki_retry">Try again</string>
+    <string name="wiki_nothing_matched">Nothing matched</string>
+    <string name="wiki_empty_help">Try another title or field. This Wiki snapshot uses English titles; you can also go back to create an interest in your own words.</string>
+    <string name="wiki_mix_full">Your mix is full. Remove a topic here, or go back to edit your mix.</string>
+    <string name="wiki_info">Info</string>
+    <string name="wiki_about_topic">About %1$s</string>
+    <string name="wiki_topic_details">Topic details</string>
+    <string name="wiki_details">%1$s\n\n%2$s\n\nField: %3$s</string>
+    <string name="wiki_close">Close</string>
+    <string name="wiki_read_source">Read source</string>
+    <string name="wiki_browse">Browse Wiki topics</string>
+    <string name="wiki_search_library">Search the Wiki topic library</string>
+    <string name="wiki_sources_body">%1$,d English Wiki topics, packaged from OtherWise for offline use.\n\nNames and descriptions: Wikidata, CC0.\nhttps://www.wikidata.org/wiki/Wikidata:Licensing\n\nSelection and fields: Wikipedia and Wikimedia contributors, via OtherWise. The derived selection is shared under CC BY-SA 4.0. LinkMe adapts the data format and uses compact references for long or distinct meanings.\nhttps://creativecommons.org/licenses/by-sa/4.0/\n\nhttps://en.wikipedia.org/wiki/Wikipedia:Vital_articles/Level/5</string>
+    <plurals name="wiki_use_interests">
+        <item quantity="one">Use %1$d interest</item>
+        <item quantity="other">Use %1$d interests</item>
+    </plurals>
 </resources>

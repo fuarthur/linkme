@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "demo-linkme",
+    "production": "linkme-e0b8d"
+  }
+}
